@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enseignants — UVCI Gestion des Heures</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <style>
+        /* --- Styles spécifiques à la page enseignants --- */
+
+        /* Modal */
+        .superposition-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .superposition-modal.ouverte {
+            display: flex;
+        }
+
+        .fenetre-modal {
+            background: var(--couleur-carte);
+            border-radius: var(--rayon-carte);
+            width: 100%;
+            max-width: 560px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+            animation: ouverture-modal 0.22s ease;
+        }
+
+        @keyframes ouverture-modal {
+            from { opacity: 0; transform: translateY(-12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .en-tete-modal {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--couleur-bordure);
+        }
+
+        .titre-modal {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--couleur-texte-principal);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .titre-modal i {
+            color: var(--couleur-principale);
+            font-size: 19px;
+        }
+
+        .bouton-fermer-modal {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--couleur-fond);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--couleur-texte-secondaire);
+            transition: var(--transition);
+        }
+
+        .bouton-fermer-modal:hover {
+            background: var(--couleur-danger);
+            color: #fff;
+        }
+
+        .corps-modal {
+            padding: 24px;
+        }
+
+        .pied-modal {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 16px 24px;
+            border-top: 1px solid var(--couleur-bordure);
+            background: var(--couleur-fond);
+            border-radius: 0 0 var(--rayon-carte) var(--rayon-carte);
+        }
+
+        /* Grille du formulaire dans le modal */
+        .grille-formulaire {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .grille-formulaire .champ-pleine-largeur {
+            grid-column: 1 / -1;
+        }
+
+        /* Champs du formulaire */
+        .groupe-champ-modal {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .etiquette-modal {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--couleur-texte-principal);
+        }
+
+        .saisie-modal {
+            padding: 9px 12px;
+            border: 1.5px solid var(--couleur-bordure);
+            border-radius: var(--rayon-element);
+            font-size: 13.5px;
+            font-family: var(--police);
+            color: var(--couleur-texte-principal);
+            background: #F8FAFF;
+            outline: none;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .saisie-modal:focus {
+            border-color: var(--couleur-principale);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        select.saisie-modal {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B94B2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+            cursor: pointer;
+        }
+
+        /* Carte de profil enseignant (vue détaillée) */
+        .carte-profil-rapide {
+            background: linear-gradient(135deg, var(--couleur-principale), var(--couleur-secondaire));
+            border-radius: 12px;
+            padding: 20px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .grand-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .info-profil-rapide h3 {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .info-profil-rapide p {
+            font-size: 12.5px;
+            opacity: 0.75;
+            margin-top: 2px;
+        }
+
+        @media (max-width: 600px) {
+            .grille-formulaire {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="superposition-mobile"></div>
+
+<div id="enveloppe">
+
+    <!-- ========================================================
+         BARRE LATÉRALE
+         ======================================================== -->
+    <aside id="barre-laterale">
+
+        <div class="logo-barre">
+            <div class="logo-icone">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <div>
+                <div class="logo-nom">UVCI</div>
+                <div class="logo-sous-titre">Heures Enseignants</div>
+            </div>
+        </div>
+
+        <nav class="navigation-barre" aria-label="Navigation principale">
+
+            <div class="groupe-navigation">
+                <a href="tableau-de-bord.html" class="lien-navigation">
+                    <i class="bi bi-grid-1x2"></i>
+                    Tableau de bord
+                </a>
+            </div>
+
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Gestion</div>
+                <a href="enseignants.html" class="lien-navigation actif">
+                    <i class="bi bi-people"></i>
+                    Enseignants
+                </a>
+                <a href="cours.html" class="lien-navigation">
+                    <i class="bi bi-book"></i>
+                    Cours
+                </a>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-collection"></i>
+                    Ressources pédagogiques
+                </a>
+            </div>
+
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Suivi</div>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-activity"></i>
+                    Activités pédagogiques
+                </a>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-calculator"></i>
+                    Calcul des heures
+                </a>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-check2-circle"></i>
+                    Validations
+                    <span class="badge-nav">5</span>
+                </a>
+            </div>
+
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Rapports</div>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    États récapitulatifs
+                </a>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-download"></i>
+                    Exports
+                </a>
+            </div>
+
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Système</div>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-gear"></i>
+                    Paramètres
+                </a>
+            </div>
+
+        </nav>
+
+        <div class="profil-barre">
+            <div class="avatar-profil">AK</div>
+            <div class="info-profil">
+                <div class="nom-profil">Admin UVCI</div>
+                <div class="role-profil">Administrateur</div>
+            </div>
+            <button class="bouton-deconnexion" title="Se déconnecter" onclick="window.location.href='connexion.html'">
+                <i class="bi bi-box-arrow-right"></i>
+            </button>
+        </div>
+
+    </aside>
+
+    <!-- ========================================================
+         CONTENU PRINCIPAL
+         ======================================================== -->
+    <div id="contenu-principal">
+
+        <header id="barre-navigation">
+            <div class="navigation-gauche">
+                <button class="bouton-basculer" id="bouton-basculer" aria-label="Basculer la barre latérale">
+                    <i class="bi bi-list"></i>
+                </button>
+                <nav class="fil-ariane" aria-label="Chemin de navigation">
+                    <span>UVCI</span>
+                    <span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span>
+                    <span>Gestion</span>
+                    <span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span>
+                    <span>Enseignants</span>
+                </nav>
+            </div>
+            <div class="navigation-droite">
+                <button class="bouton-icone-nav" title="Notifications">
+                    <i class="bi bi-bell"></i>
+                    <span class="pastille-notif"></span>
+                </button>
+                <div class="separateur-nav"></div>
+                <div class="mini-profil-nav">
+                    <div class="mini-avatar-nav">AK</div>
+                    <span class="mini-nom-nav">Admin UVCI</span>
+                    <i class="bi bi-chevron-down" style="font-size:12px;color:var(--couleur-texte-secondaire)"></i>
+                </div>
+            </div>
+        </header>
+
+        <main id="zone-contenu">
+
+            <!-- En-tête de la page -->
+            <div class="en-tete-page">
+                <div class="groupe-titre">
+                    <h1 class="titre-page">Enseignants</h1>
+                    <p class="sous-titre-page">124 enseignants enregistrés — Année académique 2025–2026</p>
+                </div>
+                <div class="actions-page">
+                    <button class="btn btn-contour">
+                        <i class="bi bi-upload"></i>
+                        Importer
+                    </button>
+                    <button class="btn btn-contour">
+                        <i class="bi bi-download"></i>
+                        Exporter
+                    </button>
+                    <button class="btn btn-principal" id="bouton-nouvel-enseignant">
+                        <i class="bi bi-plus-lg"></i>
+                        Ajouter un enseignant
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================================================
+                 MINI-STATISTIQUES
+                 ================================================ -->
+            <div class="grille-statistiques" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
+
+                <div class="carte-statistique" style="padding: 16px 18px;">
+                    <div class="etiquette-stat">Total</div>
+                    <div class="valeur-stat" style="font-size:26px">124</div>
+                    <div class="evolution-stat">Tous statuts</div>
+                    <i class="bi bi-people icone-fond-stat"></i>
+                </div>
+
+                <div class="carte-statistique accent-succes" style="padding: 16px 18px;">
+                    <div class="etiquette-stat">Permanents</div>
+                    <div class="valeur-stat" style="font-size:26px">84</div>
+                    <div class="evolution-stat hausse"><i class="bi bi-arrow-up-short"></i> 68%</div>
+                    <i class="bi bi-person-check icone-fond-stat"></i>
+                </div>
+
+                <div class="carte-statistique accent-avertissement" style="padding: 16px 18px;">
+                    <div class="etiquette-stat">Vacataires</div>
+                    <div class="valeur-stat" style="font-size:26px">40</div>
+                    <div class="evolution-stat">32%</div>
+                    <i class="bi bi-person-clock icone-fond-stat"></i>
+                </div>
+
+                <div class="carte-statistique accent-danger" style="padding: 16px 18px;">
+                    <div class="etiquette-stat">En attente</div>
+                    <div class="valeur-stat" style="font-size:26px">17</div>
+                    <div class="evolution-stat baisse"><i class="bi bi-exclamation-circle"></i> Validation</div>
+                    <i class="bi bi-hourglass icone-fond-stat"></i>
+                </div>
+
+            </div>
+
+            <!-- ================================================
+                 TABLEAU DES ENSEIGNANTS
+                 ================================================ -->
+            <div class="carte">
+
+                <!-- Barre d'outils du tableau -->
+                <div class="en-tete-carte">
+                    <div class="titre-carte">
+                        <i class="bi bi-table"></i>
+                        Liste des enseignants
+                    </div>
+                    <div class="barre-outils">
+                        <div class="champ-recherche">
+                            <i class="bi bi-search"></i>
+                            <input
+                                type="text"
+                                id="champ-recherche-tableau"
+                                placeholder="Rechercher un enseignant…"
+                                autocomplete="off"
+                            >
+                        </div>
+                        <select class="selecteur-filtre" id="filtre-statut">
+                            <option value="">Tous les statuts</option>
+                            <option value="permanent">Permanent</option>
+                            <option value="vacataire">Vacataire</option>
+                        </select>
+                        <select class="selecteur-filtre" id="filtre-departement">
+                            <option value="">Tous les départements</option>
+                            <option value="informatique">Informatique</option>
+                            <option value="mathematiques">Mathématiques</option>
+                            <option value="sciences">Sciences</option>
+                            <option value="gestion">Gestion</option>
+                            <option value="droit">Droit</option>
+                            <option value="langues">Langues</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tableau -->
+                <div class="conteneur-tableau">
+                    <table class="tableau-donnees" id="tableau-principal">
+                        <thead>
+                            <tr>
+                                <th style="width:40px">
+                                    <input type="checkbox" id="tout-selectionner" style="accent-color:var(--couleur-principale)">
+                                </th>
+                                <th data-tri="nom">Enseignant</th>
+                                <th data-tri="grade" class="colonne-masquable">Grade</th>
+                                <th data-tri="statut">Statut</th>
+                                <th data-tri="departement" class="colonne-masquable">Département</th>
+                                <th data-tri="heures">Heures totales</th>
+                                <th>Validation</th>
+                                <th style="text-align:right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr>
+                                <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                <td>
+                                    <div class="cellule-personne">
+                                        <div class="avatar-tableau bleu">KY</div>
+                                        <div>
+                                            <div class="nom-cellule">Konan Yao Jean-Paul</div>
+                                            <div class="detail-cellule">konan.yao@uvci.edu.ci</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Maître-Assistant</td>
+                                <td><span class="badge badge-succes"><i class="bi bi-circle-fill" style="font-size:7px"></i> Permanent</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Informatique</td>
+                                <td><strong>284 h</strong></td>
+                                <td><span class="badge badge-succes"><i class="bi bi-check-lg"></i> Validé</span></td>
+                                <td>
+                                    <div class="actions-tableau" style="justify-content:flex-end">
+                                        <button class="btn-icone" title="Voir le profil" onclick="ouvrirModalDetail('Konan Yao Jean-Paul', 'Maître-Assistant', 'Permanent', 'Informatique', '284 h', 'bleu', 'KY')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn-icone" title="Modifier" onclick="ouvrirModalEdition('Konan Yao Jean-Paul')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn-icone danger" title="Supprimer" onclick="confirmerSuppression('Supprimer l\'enseignant Konan Yao Jean-Paul ? Cette action est irréversible.', function() { afficherToast('Enseignant supprimé.', \'succes\'); })">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                <td>
+                                    <div class="cellule-personne">
+                                        <div class="avatar-tableau vert">DT</div>
+                                        <div>
+                                            <div class="nom-cellule">Djeninba Traoré</div>
+                                            <div class="detail-cellule">djeninba.traore@uvci.edu.ci</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Professeur</td>
+                                <td><span class="badge badge-succes"><i class="bi bi-circle-fill" style="font-size:7px"></i> Permanent</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Informatique</td>
+                                <td><strong>420 h</strong></td>
+                                <td><span class="badge badge-avertissement"><i class="bi bi-clock"></i> En attente</span></td>
+                                <td>
+                                    <div class="actions-tableau" style="justify-content:flex-end">
+                                        <button class="btn-icone" title="Voir le profil" onclick="ouvrirModalDetail('Djeninba Traoré', 'Professeur', 'Permanent', 'Informatique', '420 h', 'vert', 'DT')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn-icone" title="Modifier" onclick="ouvrirModalEdition('Djeninba Traoré')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn-icone danger" title="Supprimer" onclick="confirmerSuppression('Supprimer l\'enseignant Djeninba Traoré ?', function() { afficherToast('Enseignant supprimé.', \'succes\'); })">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                <td>
+                                    <div class="cellule-personne">
+                                        <div class="avatar-tableau orange">GD</div>
+                                        <div>
+                                            <div class="nom-cellule">Gerard Deungo Miangui</div>
+                                            <div class="detail-cellule">gerard.deungo@uvci.edu.ci</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Assistant</td>
+                                <td><span class="badge badge-avertissement"><i class="bi bi-circle-fill" style="font-size:7px"></i> Vacataire</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Sciences</td>
+                                <td><strong>160 h</strong></td>
+                                <td><span class="badge badge-succes"><i class="bi bi-check-lg"></i> Validé</span></td>
+                                <td>
+                                    <div class="actions-tableau" style="justify-content:flex-end">
+                                        <button class="btn-icone" title="Voir le profil" onclick="ouvrirModalDetail('Gerard Deungo Miangui', 'Assistant', 'Vacataire', 'Sciences', '160 h', 'orange', 'GD')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn-icone" title="Modifier" onclick="ouvrirModalEdition('Gerard Deungo Miangui')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn-icone danger" title="Supprimer" onclick="confirmerSuppression('Supprimer l\'enseignant Gerard Deungo Miangui ?', function() { afficherToast('Enseignant supprimé.', \'succes\'); })">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                <td>
+                                    <div class="cellule-personne">
+                                        <div class="avatar-tableau violet">DS</div>
+                                        <div>
+                                            <div class="nom-cellule">Dah Sébastien</div>
+                                            <div class="detail-cellule">dah.sebastien@uvci.edu.ci</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Assistant</td>
+                                <td><span class="badge badge-avertissement"><i class="bi bi-circle-fill" style="font-size:7px"></i> Vacataire</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Informatique</td>
+                                <td><strong>96 h</strong></td>
+                                <td><span class="badge badge-avertissement"><i class="bi bi-clock"></i> En attente</span></td>
+                                <td>
+                                    <div class="actions-tableau" style="justify-content:flex-end">
+                                        <button class="btn-icone" title="Voir le profil" onclick="ouvrirModalDetail('Dah Sébastien', 'Assistant', 'Vacataire', 'Informatique', '96 h', 'violet', 'DS')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn-icone" title="Modifier" onclick="ouvrirModalEdition('Dah Sébastien')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn-icone danger" title="Supprimer" onclick="confirmerSuppression('Supprimer l\'enseignant Dah Sébastien ?', function() { afficherToast('Enseignant supprimé.', \'succes\'); })">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                <td>
+                                    <div class="cellule-personne">
+                                        <div class="avatar-tableau cyan">AK</div>
+                                        <div>
+                                            <div class="nom-cellule">Ameku Kujoji Kephas</div>
+                                            <div class="detail-cellule">ameku.kephas@uvci.edu.ci</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Maître-Assistant</td>
+                                <td><span class="badge badge-succes"><i class="bi bi-circle-fill" style="font-size:7px"></i> Permanent</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Mathématiques</td>
+                                <td><strong>312 h</strong></td>
+                                <td><span class="badge badge-succes"><i class="bi bi-check-lg"></i> Validé</span></td>
+                                <td>
+                                    <div class="actions-tableau" style="justify-content:flex-end">
+                                        <button class="btn-icone" title="Voir le profil" onclick="ouvrirModalDetail('Ameku Kujoji Kephas', 'Maître-Assistant', 'Permanent', 'Mathématiques', '312 h', 'cyan', 'AK')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn-icone" title="Modifier" onclick="ouvrirModalEdition('Ameku Kujoji Kephas')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn-icone danger" title="Supprimer" onclick="confirmerSuppression('Supprimer l\'enseignant Ameku Kujoji Kephas ?', function() { afficherToast('Enseignant supprimé.', \'succes\'); })">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                <td>
+                                    <div class="cellule-personne">
+                                        <div class="avatar-tableau bleu">CE</div>
+                                        <div>
+                                            <div class="nom-cellule">Cédric Emanuella Quasi</div>
+                                            <div class="detail-cellule">cedric.quasi@uvci.edu.ci</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Assistant</td>
+                                <td><span class="badge badge-avertissement"><i class="bi bi-circle-fill" style="font-size:7px"></i> Vacataire</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Gestion</td>
+                                <td><strong>128 h</strong></td>
+                                <td><span class="badge badge-danger"><i class="bi bi-x-lg"></i> Rejeté</span></td>
+                                <td>
+                                    <div class="actions-tableau" style="justify-content:flex-end">
+                                        <button class="btn-icone" title="Voir le profil" onclick="ouvrirModalDetail('Cédric Emanuella Quasi', 'Assistant', 'Vacataire', 'Gestion', '128 h', 'bleu', 'CE')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn-icone" title="Modifier" onclick="ouvrirModalEdition('Cédric Emanuella Quasi')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn-icone danger" title="Supprimer" onclick="confirmerSuppression('Supprimer l\'enseignant Cédric Emanuella Quasi ?', function() { afficherToast('Enseignant supprimé.', \'succes\'); })">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="conteneur-pagination">
+                    <span>Affichage de <strong>6</strong> sur <strong>124</strong> enseignants</span>
+                    <div class="pagination">
+                        <button class="bouton-page" title="Page précédente"><i class="bi bi-chevron-left"></i></button>
+                        <button class="bouton-page actif">1</button>
+                        <button class="bouton-page">2</button>
+                        <button class="bouton-page">3</button>
+                        <span style="padding:0 6px;color:var(--couleur-texte-secondaire)">…</span>
+                        <button class="bouton-page">21</button>
+                        <button class="bouton-page" title="Page suivante"><i class="bi bi-chevron-right"></i></button>
+                    </div>
+                </div>
+
+            </div>
+            <!-- fin .carte tableau -->
+
+        </main>
+
+        <footer id="pied-page">
+            © 2026 Université Virtuelle de Côte d'Ivoire — Application de gestion des heures des enseignants
+        </footer>
+
+    </div>
+</div>
+
+<!-- ============================================================
+     MODAL — Ajouter / Modifier un enseignant
+     ============================================================ -->
+<div class="superposition-modal" id="modal-enseignant" role="dialog" aria-modal="true" aria-labelledby="titre-modal-enseignant">
+    <div class="fenetre-modal">
+
+        <div class="en-tete-modal">
+            <div class="titre-modal">
+                <i class="bi bi-person-plus"></i>
+                <span id="titre-modal-enseignant">Ajouter un enseignant</span>
+            </div>
+            <button class="bouton-fermer-modal" onclick="fermerModal('modal-enseignant')" aria-label="Fermer">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <div class="corps-modal">
+            <form id="formulaire-enseignant" novalidate>
+                <div class="grille-formulaire">
+
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal" for="saisie-prenom">Prénom</label>
+                        <input class="saisie-modal" type="text" id="saisie-prenom" placeholder="Prénom de l'enseignant" required>
+                    </div>
+
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal" for="saisie-nom">Nom de famille</label>
+                        <input class="saisie-modal" type="text" id="saisie-nom" placeholder="Nom de famille" required>
+                    </div>
+
+                    <div class="groupe-champ-modal champ-pleine-largeur">
+                        <label class="etiquette-modal" for="saisie-email">Adresse e-mail</label>
+                        <input class="saisie-modal" type="email" id="saisie-email" placeholder="prenom.nom@uvci.edu.ci" required>
+                    </div>
+
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal" for="saisie-grade">Grade</label>
+                        <select class="saisie-modal" id="saisie-grade" required>
+                            <option value="">Sélectionner…</option>
+                            <option value="assistant">Assistant</option>
+                            <option value="maitre-assistant">Maître-Assistant</option>
+                            <option value="maitre-conference">Maître de Conférences</option>
+                            <option value="professeur">Professeur</option>
+                        </select>
+                    </div>
+
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal" for="saisie-statut">Statut</label>
+                        <select class="saisie-modal" id="saisie-statut" required>
+                            <option value="">Sélectionner…</option>
+                            <option value="permanent">Permanent</option>
+                            <option value="vacataire">Vacataire</option>
+                        </select>
+                    </div>
+
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal" for="saisie-departement">Département</label>
+                        <select class="saisie-modal" id="saisie-departement" required>
+                            <option value="">Sélectionner…</option>
+                            <option value="informatique">Informatique</option>
+                            <option value="mathematiques">Mathématiques</option>
+                            <option value="sciences">Sciences</option>
+                            <option value="gestion">Gestion</option>
+                            <option value="droit">Droit</option>
+                            <option value="langues">Langues</option>
+                        </select>
+                    </div>
+
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal" for="saisie-telephone">Téléphone</label>
+                        <input class="saisie-modal" type="tel" id="saisie-telephone" placeholder="+225 07 00 00 00 00">
+                    </div>
+
+                    <div class="groupe-champ-modal champ-pleine-largeur">
+                        <label class="etiquette-modal" for="saisie-taux-horaire">Taux horaire (FCFA/heure)</label>
+                        <input class="saisie-modal" type="number" id="saisie-taux-horaire" placeholder="Ex. : 5000" min="0">
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <div class="pied-modal">
+            <button class="btn btn-contour" onclick="fermerModal('modal-enseignant')">Annuler</button>
+            <button class="btn btn-principal" onclick="soumettreFormulaireEnseignant()">
+                <i class="bi bi-check-lg"></i>
+                Enregistrer
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- ============================================================
+     MODAL — Détail d'un enseignant
+     ============================================================ -->
+<div class="superposition-modal" id="modal-detail" role="dialog" aria-modal="true" aria-labelledby="titre-modal-detail">
+    <div class="fenetre-modal">
+
+        <div class="en-tete-modal">
+            <div class="titre-modal">
+                <i class="bi bi-person-lines-fill"></i>
+                <span id="titre-modal-detail">Profil enseignant</span>
+            </div>
+            <button class="bouton-fermer-modal" onclick="fermerModal('modal-detail')" aria-label="Fermer">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <div class="corps-modal">
+
+            <!-- Carte de profil rapide -->
+            <div class="carte-profil-rapide">
+                <div class="grand-avatar" id="detail-avatar-initiales"></div>
+                <div class="info-profil-rapide">
+                    <h3 id="detail-nom-complet"></h3>
+                    <p id="detail-grade-statut"></p>
+                </div>
+            </div>
+
+            <!-- Informations détaillées -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+
+                <div style="background:var(--couleur-fond);border-radius:9px;padding:12px 14px">
+                    <div style="font-size:11px;font-weight:600;color:var(--couleur-texte-secondaire);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Département</div>
+                    <div style="font-size:14px;font-weight:600" id="detail-departement"></div>
+                </div>
+
+                <div style="background:var(--couleur-fond);border-radius:9px;padding:12px 14px">
+                    <div style="font-size:11px;font-weight:600;color:var(--couleur-texte-secondaire);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Heures totales</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--couleur-principale)" id="detail-heures"></div>
+                </div>
+
+                <div style="background:var(--couleur-fond);border-radius:9px;padding:12px 14px">
+                    <div style="font-size:11px;font-weight:600;color:var(--couleur-texte-secondaire);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Cours actifs</div>
+                    <div style="font-size:14px;font-weight:600">4 cours</div>
+                </div>
+
+                <div style="background:var(--couleur-fond);border-radius:9px;padding:12px 14px">
+                    <div style="font-size:11px;font-weight:600;color:var(--couleur-texte-secondaire);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Heures complémentaires</div>
+                    <div style="font-size:14px;font-weight:700;color:var(--couleur-succes)">48 h</div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="pied-modal">
+            <button class="btn btn-contour" onclick="fermerModal('modal-detail')">Fermer</button>
+            <button class="btn btn-principal">
+                <i class="bi bi-file-earmark-arrow-down"></i>
+                Télécharger la fiche
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script src="assets/js/main.js"></script>
+<script>
+    /* --- Gestion des modals --- */
+    function ouvrirModal(idModal) {
+        document.getElementById(idModal).classList.add('ouverte');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function fermerModal(idModal) {
+        document.getElementById(idModal).classList.remove('ouverte');
+        document.body.style.overflow = '';
+    }
+
+    /* Fermer le modal avec Échap */
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.superposition-modal.ouverte').forEach(function(m) {
+                m.classList.remove('ouverte');
+            });
+            document.body.style.overflow = '';
+        }
+    });
+
+    /* Fermer en cliquant sur la superposition */
+    document.querySelectorAll('.superposition-modal').forEach(function(modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) fermerModal(modal.id);
+        });
+    });
+
+    /* Bouton d'ouverture du modal d'ajout */
+    document.getElementById('bouton-nouvel-enseignant').addEventListener('click', function() {
+        document.getElementById('titre-modal-enseignant').textContent = 'Ajouter un enseignant';
+        document.getElementById('formulaire-enseignant').reset();
+        ouvrirModal('modal-enseignant');
+    });
+
+    /* Modal d'édition */
+    function ouvrirModalEdition(nomEnseignant) {
+        document.getElementById('titre-modal-enseignant').textContent = 'Modifier — ' + nomEnseignant;
+        ouvrirModal('modal-enseignant');
+    }
+
+    /* Modal de détail */
+    function ouvrirModalDetail(nom, grade, statut, departement, heures, couleurAvatar, initiales) {
+        document.getElementById('detail-nom-complet').textContent = nom;
+        document.getElementById('detail-grade-statut').textContent = grade + ' · ' + statut;
+        document.getElementById('detail-departement').textContent = departement;
+        document.getElementById('detail-heures').textContent = heures;
+
+        var avatar = document.getElementById('detail-avatar-initiales');
+        avatar.textContent = initiales;
+        avatar.className = 'grand-avatar ' + couleurAvatar;
+
+        ouvrirModal('modal-detail');
+    }
+
+    /* Soumission du formulaire */
+    function soumettreFormulaireEnseignant() {
+        var prenom = document.getElementById('saisie-prenom').value.trim();
+        var nom    = document.getElementById('saisie-nom').value.trim();
+        var email  = document.getElementById('saisie-email').value.trim();
+
+        if (!prenom || !nom || !email) {
+            afficherToast('Veuillez remplir tous les champs obligatoires.', 'avertissement');
+            return;
+        }
+
+        /* Ici, appel à l'API Laravel en production */
+        afficherToast('Enseignant enregistré avec succès.', 'succes');
+        fermerModal('modal-enseignant');
+        document.getElementById('formulaire-enseignant').reset();
+    }
+
+    /* Sélection globale des cases à cocher */
+    document.getElementById('tout-selectionner').addEventListener('change', function() {
+        var cases = document.querySelectorAll('#tableau-principal tbody input[type="checkbox"]');
+        cases.forEach(function(c) { c.checked = this.checked; }, this);
+    });
+</script>
+
+</body>
+</html>

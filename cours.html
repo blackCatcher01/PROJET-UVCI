@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cours — UVCI Gestion des Heures</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <style>
+        /* --- Styles spécifiques à la page cours --- */
+
+        /* Modal (réutilisation du style enseignants) */
+        .superposition-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .superposition-modal.ouverte { display: flex; }
+
+        .fenetre-modal {
+            background: var(--couleur-carte);
+            border-radius: var(--rayon-carte);
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+            animation: ouverture-modal 0.22s ease;
+        }
+
+        @keyframes ouverture-modal {
+            from { opacity: 0; transform: translateY(-12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .en-tete-modal {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--couleur-bordure);
+        }
+
+        .titre-modal {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--couleur-texte-principal);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .titre-modal i { color: var(--couleur-principale); font-size: 19px; }
+
+        .bouton-fermer-modal {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--couleur-fond);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--couleur-texte-secondaire);
+            transition: var(--transition);
+        }
+
+        .bouton-fermer-modal:hover { background: var(--couleur-danger); color: #fff; }
+
+        .corps-modal { padding: 24px; max-height: 70vh; overflow-y: auto; }
+
+        .pied-modal {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 16px 24px;
+            border-top: 1px solid var(--couleur-bordure);
+            background: var(--couleur-fond);
+            border-radius: 0 0 var(--rayon-carte) var(--rayon-carte);
+        }
+
+        .grille-formulaire {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .grille-formulaire .champ-pleine-largeur { grid-column: 1 / -1; }
+
+        .groupe-champ-modal {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .etiquette-modal {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--couleur-texte-principal);
+        }
+
+        .saisie-modal {
+            padding: 9px 12px;
+            border: 1.5px solid var(--couleur-bordure);
+            border-radius: var(--rayon-element);
+            font-size: 13.5px;
+            font-family: var(--police);
+            color: var(--couleur-texte-principal);
+            background: #F8FAFF;
+            outline: none;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .saisie-modal:focus {
+            border-color: var(--couleur-principale);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        select.saisie-modal {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B94B2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+            cursor: pointer;
+        }
+
+        /* Indicateur de niveau dans le tableau */
+        .indicateur-niveau {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pastilles-niveau {
+            display: flex;
+            gap: 3px;
+        }
+
+        .pastille {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--couleur-bordure);
+        }
+
+        .pastille.active { background: var(--couleur-principale); }
+
+        .pastille.active.niveau-2 { background: var(--couleur-succes); }
+        .pastille.active.niveau-3 { background: var(--couleur-secondaire); }
+
+        /* Carte récapitulative de calcul */
+        .carte-calcul {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.06), rgba(114, 9, 183, 0.06));
+            border: 1px solid rgba(67, 97, 238, 0.15);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-top: 16px;
+        }
+
+        .titre-calcul {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--couleur-principale);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .lignes-calcul {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .ligne-calcul {
+            text-align: center;
+        }
+
+        .valeur-calcul {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--couleur-texte-principal);
+        }
+
+        .label-calcul {
+            font-size: 10.5px;
+            color: var(--couleur-texte-secondaire);
+            margin-top: 2px;
+        }
+
+        @media (max-width: 600px) {
+            .grille-formulaire { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="superposition-mobile"></div>
+
+<div id="enveloppe">
+
+    <!-- ========================================================
+         BARRE LATÉRALE
+         ======================================================== -->
+    <aside id="barre-laterale">
+
+        <div class="logo-barre">
+            <div class="logo-icone">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <div>
+                <div class="logo-nom">UVCI</div>
+                <div class="logo-sous-titre">Heures Enseignants</div>
+            </div>
+        </div>
+
+        <nav class="navigation-barre" aria-label="Navigation principale">
+
+            <div class="groupe-navigation">
+                <a href="tableau-de-bord.html" class="lien-navigation">
+                    <i class="bi bi-grid-1x2"></i>
+                    Tableau de bord
+                </a>
+            </div>
+
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Gestion</div>
+                <a href="enseignants.html" class="lien-navigation">
+                    <i class="bi bi-people"></i>
+                    Enseignants
+                </a>
+                <a href="cours.html" class="lien-navigation actif">
+                    <i class="bi bi-book"></i>
+                    Cours
+                </a>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-collection"></i>
+                    Ressources pédagogiques
+                </a>
+            </div>
+
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Suivi</div>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-activity"></i>
+                    Activités pédagogiques
+                </a>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-calculator"></i>
+                    Calcul des heures
+                </a>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-check2-circle"></i>
+                    Validations
+                    <span class="badge-nav">5</span>
+                </a>
+            </div>
+
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Rapports</div>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    États récapitulatifs
+                </a>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-download"></i>
+                    Exports
+                </a>
+            </div>
+
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Système</div>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-gear"></i>
+                    Paramètres
+                </a>
+            </div>
+
+        </nav>
+
+        <div class="profil-barre">
+            <div class="avatar-profil">AK</div>
+            <div class="info-profil">
+                <div class="nom-profil">Admin UVCI</div>
+                <div class="role-profil">Administrateur</div>
+            </div>
+            <button class="bouton-deconnexion" title="Se déconnecter" onclick="window.location.href='connexion.html'">
+                <i class="bi bi-box-arrow-right"></i>
+            </button>
+        </div>
+
+    </aside>
+
+    <!-- ========================================================
+         CONTENU PRINCIPAL
+         ======================================================== -->
+    <div id="contenu-principal">
+
+        <header id="barre-navigation">
+            <div class="navigation-gauche">
+                <button class="bouton-basculer" id="bouton-basculer" aria-label="Basculer la barre latérale">
+                    <i class="bi bi-list"></i>
+                </button>
+                <nav class="fil-ariane" aria-label="Chemin de navigation">
+                    <span>UVCI</span>
+                    <span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span>
+                    <span>Gestion</span>
+                    <span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span>
+                    <span>Cours</span>
+                </nav>
+            </div>
+            <div class="navigation-droite">
+                <button class="bouton-icone-nav" title="Notifications">
+                    <i class="bi bi-bell"></i>
+                    <span class="pastille-notif"></span>
+                </button>
+                <div class="separateur-nav"></div>
+                <div class="mini-profil-nav">
+                    <div class="mini-avatar-nav">AK</div>
+                    <span class="mini-nom-nav">Admin UVCI</span>
+                    <i class="bi bi-chevron-down" style="font-size:12px;color:var(--couleur-texte-secondaire)"></i>
+                </div>
+            </div>
+        </header>
+
+        <main id="zone-contenu">
+
+            <!-- En-tête de la page -->
+            <div class="en-tete-page">
+                <div class="groupe-titre">
+                    <h1 class="titre-page">Cours</h1>
+                    <p class="sous-titre-page">342 cours enregistrés — Année académique 2025–2026</p>
+                </div>
+                <div class="actions-page">
+                    <button class="btn btn-contour">
+                        <i class="bi bi-download"></i>
+                        Exporter
+                    </button>
+                    <button class="btn btn-principal" id="bouton-nouveau-cours">
+                        <i class="bi bi-plus-lg"></i>
+                        Ajouter un cours
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================================================
+                 MINI-STATISTIQUES
+                 ================================================ -->
+            <div class="grille-statistiques" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 20px;">
+
+                <div class="carte-statistique" style="padding: 16px 18px;">
+                    <div class="etiquette-stat">Total cours</div>
+                    <div class="valeur-stat" style="font-size:26px">342</div>
+                    <div class="evolution-stat">Tous niveaux</div>
+                    <i class="bi bi-book icone-fond-stat"></i>
+                </div>
+
+                <div class="carte-statistique accent-info" style="padding: 16px 18px;">
+                    <div class="etiquette-stat">Niveau 1</div>
+                    <div class="valeur-stat" style="font-size:26px">154</div>
+                    <div class="evolution-stat">Contenus simples</div>
+                    <i class="bi bi-layers icone-fond-stat"></i>
+                </div>
+
+                <div class="carte-statistique accent-succes" style="padding: 16px 18px;">
+                    <div class="etiquette-stat">Niveau 2</div>
+                    <div class="valeur-stat" style="font-size:26px">130</div>
+                    <div class="evolution-stat">Interactifs</div>
+                    <i class="bi bi-lightning icone-fond-stat"></i>
+                </div>
+
+                <div class="carte-statistique accent-avertissement" style="padding: 16px 18px;">
+                    <div class="etiquette-stat">Niveau 3</div>
+                    <div class="valeur-stat" style="font-size:26px">58</div>
+                    <div class="evolution-stat">Simulations</div>
+                    <i class="bi bi-stars icone-fond-stat"></i>
+                </div>
+
+            </div>
+
+            <!-- ================================================
+                 TABLEAU DES COURS
+                 ================================================ -->
+            <div class="carte">
+
+                <div class="en-tete-carte">
+                    <div class="titre-carte">
+                        <i class="bi bi-table"></i>
+                        Liste des cours
+                    </div>
+                    <div class="barre-outils">
+                        <div class="champ-recherche">
+                            <i class="bi bi-search"></i>
+                            <input
+                                type="text"
+                                id="champ-recherche-tableau"
+                                placeholder="Rechercher un cours…"
+                                autocomplete="off"
+                            >
+                        </div>
+                        <select class="selecteur-filtre" id="filtre-niveau">
+                            <option value="">Tous les niveaux</option>
+                            <option value="l1">L1</option>
+                            <option value="l2">L2</option>
+                            <option value="l3">L3</option>
+                            <option value="m1">M1</option>
+                            <option value="m2">M2</option>
+                        </select>
+                        <select class="selecteur-filtre" id="filtre-semestre">
+                            <option value="">Tous semestres</option>
+                            <option value="semestre 1">Semestre 1</option>
+                            <option value="semestre 2">Semestre 2</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="conteneur-tableau">
+                    <table class="tableau-donnees" id="tableau-principal">
+                        <thead>
+                            <tr>
+                                <th style="width:40px">
+                                    <input type="checkbox" id="tout-selectionner" style="accent-color:var(--couleur-principale)">
+                                </th>
+                                <th data-tri="intitule">Intitulé du cours</th>
+                                <th data-tri="filiere" class="colonne-masquable">Filière</th>
+                                <th data-tri="niveau">Niveau</th>
+                                <th data-tri="semestre" class="colonne-masquable">Semestre</th>
+                                <th data-tri="credits">Crédits</th>
+                                <th data-tri="niveau-contenu">Niv. contenu</th>
+                                <th data-tri="heures">Vol. horaire</th>
+                                <th data-tri="statut">Statut</th>
+                                <th style="text-align:right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr>
+                                <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                <td>
+                                    <div style="font-weight:600;color:var(--couleur-texte-principal)">Programmation Web</div>
+                                    <div class="detail-cellule">Konan Yao Jean-Paul</div>
+                                </td>
+                                <td class="texte-secondaire-tableau colonne-masquable">DAS</td>
+                                <td><span class="badge badge-info">L2</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Semestre 2</td>
+                                <td style="font-weight:600">2 Cr</td>
+                                <td>
+                                    <div class="indicateur-niveau">
+                                        <div class="pastilles-niveau">
+                                            <div class="pastille active"></div>
+                                            <div class="pastille active"></div>
+                                            <div class="pastille"></div>
+                                        </div>
+                                        <span class="texte-secondaire-tableau">Niv. 2</span>
+                                    </div>
+                                </td>
+                                <td style="font-weight:700;color:var(--couleur-principale)">60 h</td>
+                                <td><span class="badge badge-succes"><i class="bi bi-check-lg"></i> Validé</span></td>
+                                <td>
+                                    <div class="actions-tableau" style="justify-content:flex-end">
+                                        <button class="btn-icone" title="Voir le détail" onclick="ouvrirModalDetail('Programmation Web', 'L2', '2 Cr', 'Niveau 2', '60 h', 'Konan Yao Jean-Paul')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn-icone" title="Modifier" onclick="ouvrirModalEdition('Programmation Web')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn-icone danger" title="Supprimer" onclick="confirmerSuppression('Supprimer le cours Programmation Web ?', function() { afficherToast('Cours supprimé.', \'succes\'); })">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                <td>
+                                    <div style="font-weight:600">Base de données avancées</div>
+                                    <div class="detail-cellule">Djeninba Traoré</div>
+                                </td>
+                                <td class="texte-secondaire-tableau colonne-masquable">DAS</td>
+                                <td><span class="badge badge-info">L3</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Semestre 1</td>
+                                <td style="font-weight:600">3 Cr</td>
+                                <td>
+                                    <div class="indicateur-niveau">
+                                        <div class="pastilles-niveau">
+                                            <div class="pastille active niveau-3"></div>
+                                            <div class="pastille active niveau-3"></div>
+                                            <div class="pastille active niveau-3"></div>
+                                        </div>
+                                        <span class="texte-secondaire-tableau">Niv. 3</span>
+                                    </div>
+                                </td>
+                                <td style="font-weight:700;color:var(--couleur-principale)">120 h</td>
+                                <td><span class="badge badge-avertissement"><i class="bi bi-clock"></i> En attente</span></td>
+                                <td>
+                                    <div class="actions-tableau" style="justify-content:flex-end">
+                                        <button class="btn-icone" title="Voir le détail" onclick="ouvrirModalDetail('Base de données avancées', 'L3', '3 Cr', 'Niveau 3', '120 h', 'Djeninba Traoré')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn-icone" title="Modifier" onclick="ouvrirModalEdition('Base de données avancées')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn-icone danger" title="Supprimer" onclick="confirmerSuppression('Supprimer le cours Base de données avancées ?', function() { afficherToast('Cours supprimé.', \'succes\'); })">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                <td>
+                                    <div style="font-weight:600">Algorithmique et structures de données</div>
+                                    <div class="detail-cellule">Ameku Kujoji Kephas</div>
+                                </td>
+                                <td class="texte-secondaire-tableau colonne-masquable">DAS</td>
+                                <td><span class="badge badge-info">L1</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Semestre 1</td>
+                                <td style="font-weight:600">2 Cr</td>
+                                <td>
+                                    <div class="indicateur-niveau">
+                                        <div class="pastilles-niveau">
+                                            <div class="pastille active"></div>
+                                            <div class="pastille"></div>
+                                            <div class="pastille"></div>
+                                        </div>
+                                        <span class="texte-secondaire-tableau">Niv. 1</span>
+                                    </div>
+                                </td>
+                                <td style="font-weight:700;color:var(--couleur-principale)">32 h</td>
+                                <td><span class="badge badge-succes"><i class="bi bi-check-lg"></i> Validé</span></td>
+                                <td>
+                                    <div class="actions-tableau" style="justify-content:flex-end">
+                                        <button class="btn-icone" title="Voir le détail" onclick="ouvrirModalDetail('Algorithmique et structures de données', 'L1', '2 Cr', 'Niveau 1', '32 h', 'Ameku Kujoji Kephas')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn-icone" title="Modifier" onclick="ouvrirModalEdition('Algorithmique et structures de données')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn-icone danger" title="Supprimer" onclick="confirmerSuppression('Supprimer ce cours ?', function() { afficherToast('Cours supprimé.', \'succes\'); })">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                <td>
+                                    <div style="font-weight:600">Réseaux et protocoles</div>
+                                    <div class="detail-cellule">Gerard Deungo Miangui</div>
+                                </td>
+                                <td class="texte-secondaire-tableau colonne-masquable">DAS</td>
+                                <td><span class="badge badge-violet">M1</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Semestre 2</td>
+                                <td style="font-weight:600">4 Cr</td>
+                                <td>
+                                    <div class="indicateur-niveau">
+                                        <div class="pastilles-niveau">
+                                            <div class="pastille active niveau-3"></div>
+                                            <div class="pastille active niveau-3"></div>
+                                            <div class="pastille active niveau-3"></div>
+                                        </div>
+                                        <span class="texte-secondaire-tableau">Niv. 3</span>
+                                    </div>
+                                </td>
+                                <td style="font-weight:700;color:var(--couleur-principale)">240 h</td>
+                                <td><span class="badge badge-succes"><i class="bi bi-check-lg"></i> Validé</span></td>
+                                <td>
+                                    <div class="actions-tableau" style="justify-content:flex-end">
+                                        <button class="btn-icone" title="Voir le détail" onclick="ouvrirModalDetail('Réseaux et protocoles', 'M1', '4 Cr', 'Niveau 3', '240 h', 'Gerard Deungo Miangui')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn-icone" title="Modifier" onclick="ouvrirModalEdition('Réseaux et protocoles')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn-icone danger" title="Supprimer" onclick="confirmerSuppression('Supprimer le cours Réseaux et protocoles ?', function() { afficherToast('Cours supprimé.', \'succes\'); })">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                <td>
+                                    <div style="font-weight:600">Introduction à la programmation</div>
+                                    <div class="detail-cellule">Dah Sébastien</div>
+                                </td>
+                                <td class="texte-secondaire-tableau colonne-masquable">DAS</td>
+                                <td><span class="badge badge-info">L1</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Semestre 1</td>
+                                <td style="font-weight:600">1 Cr</td>
+                                <td>
+                                    <div class="indicateur-niveau">
+                                        <div class="pastilles-niveau">
+                                            <div class="pastille active"></div>
+                                            <div class="pastille active"></div>
+                                            <div class="pastille"></div>
+                                        </div>
+                                        <span class="texte-secondaire-tableau">Niv. 2</span>
+                                    </div>
+                                </td>
+                                <td style="font-weight:700;color:var(--couleur-principale)">30 h</td>
+                                <td><span class="badge badge-avertissement"><i class="bi bi-clock"></i> En attente</span></td>
+                                <td>
+                                    <div class="actions-tableau" style="justify-content:flex-end">
+                                        <button class="btn-icone" title="Voir le détail" onclick="ouvrirModalDetail('Introduction à la programmation', 'L1', '1 Cr', 'Niveau 2', '30 h', 'Dah Sébastien')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn-icone" title="Modifier" onclick="ouvrirModalEdition('Introduction à la programmation')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn-icone danger" title="Supprimer" onclick="confirmerSuppression('Supprimer ce cours ?', function() { afficherToast('Cours supprimé.', \'succes\'); })">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                <td>
+                                    <div style="font-weight:600">Analyse et conception de systèmes</div>
+                                    <div class="detail-cellule">Cédric Emanuella Quasi</div>
+                                </td>
+                                <td class="texte-secondaire-tableau colonne-masquable">DAS</td>
+                                <td><span class="badge badge-info">L3</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Semestre 1</td>
+                                <td style="font-weight:600">3 Cr</td>
+                                <td>
+                                    <div class="indicateur-niveau">
+                                        <div class="pastilles-niveau">
+                                            <div class="pastille active"></div>
+                                            <div class="pastille"></div>
+                                            <div class="pastille"></div>
+                                        </div>
+                                        <span class="texte-secondaire-tableau">Niv. 1</span>
+                                    </div>
+                                </td>
+                                <td style="font-weight:700;color:var(--couleur-principale)">48 h</td>
+                                <td><span class="badge badge-danger"><i class="bi bi-x-lg"></i> Rejeté</span></td>
+                                <td>
+                                    <div class="actions-tableau" style="justify-content:flex-end">
+                                        <button class="btn-icone" title="Voir le détail" onclick="ouvrirModalDetail('Analyse et conception de systèmes', 'L3', '3 Cr', 'Niveau 1', '48 h', 'Cédric Emanuella Quasi')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn-icone" title="Modifier" onclick="ouvrirModalEdition('Analyse et conception de systèmes')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn-icone danger" title="Supprimer" onclick="confirmerSuppression('Supprimer ce cours ?', function() { afficherToast('Cours supprimé.', \'succes\'); })">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="conteneur-pagination">
+                    <span>Affichage de <strong>6</strong> sur <strong>342</strong> cours</span>
+                    <div class="pagination">
+                        <button class="bouton-page" title="Précédent"><i class="bi bi-chevron-left"></i></button>
+                        <button class="bouton-page actif">1</button>
+                        <button class="bouton-page">2</button>
+                        <button class="bouton-page">3</button>
+                        <span style="padding:0 6px;color:var(--couleur-texte-secondaire)">…</span>
+                        <button class="bouton-page">57</button>
+                        <button class="bouton-page" title="Suivant"><i class="bi bi-chevron-right"></i></button>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+        <footer id="pied-page">
+            © 2026 Université Virtuelle de Côte d'Ivoire — Application de gestion des heures des enseignants
+        </footer>
+
+    </div>
+</div>
+
+<!-- ============================================================
+     MODAL — Ajouter / Modifier un cours
+     ============================================================ -->
+<div class="superposition-modal" id="modal-cours" role="dialog" aria-modal="true" aria-labelledby="titre-modal-cours">
+    <div class="fenetre-modal">
+
+        <div class="en-tete-modal">
+            <div class="titre-modal">
+                <i class="bi bi-book-half"></i>
+                <span id="titre-modal-cours">Ajouter un cours</span>
+            </div>
+            <button class="bouton-fermer-modal" onclick="fermerModal('modal-cours')" aria-label="Fermer">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <div class="corps-modal">
+            <form id="formulaire-cours" novalidate>
+                <div class="grille-formulaire">
+
+                    <div class="groupe-champ-modal champ-pleine-largeur">
+                        <label class="etiquette-modal" for="saisie-intitule">Intitulé du cours</label>
+                        <input class="saisie-modal" type="text" id="saisie-intitule" placeholder="Ex. : Programmation Web" required>
+                    </div>
+
+                    <div class="groupe-champ-modal champ-pleine-largeur">
+                        <label class="etiquette-modal" for="saisie-enseignant">Enseignant responsable</label>
+                        <select class="saisie-modal" id="saisie-enseignant" required>
+                            <option value="">Sélectionner un enseignant…</option>
+                            <option>Konan Yao Jean-Paul</option>
+                            <option>Djeninba Traoré</option>
+                            <option>Gerard Deungo Miangui</option>
+                            <option>Dah Sébastien</option>
+                            <option>Ameku Kujoji Kephas</option>
+                            <option>Cédric Emanuella Quasi</option>
+                        </select>
+                    </div>
+
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal" for="saisie-filiere">Filière</label>
+                        <select class="saisie-modal" id="saisie-filiere" required>
+                            <option value="">Sélectionner…</option>
+                            <option value="das">DAS</option>
+                            <option value="iea">IEA</option>
+                            <option value="tci">TCI</option>
+                            <option value="eco">Économie</option>
+                            <option value="droit">Droit</option>
+                        </select>
+                    </div>
+
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal" for="saisie-niveau-cours">Niveau</label>
+                        <select class="saisie-modal" id="saisie-niveau-cours" required>
+                            <option value="">Sélectionner…</option>
+                            <option value="l1">L1</option>
+                            <option value="l2">L2</option>
+                            <option value="l3">L3</option>
+                            <option value="m1">M1</option>
+                            <option value="m2">M2</option>
+                        </select>
+                    </div>
+
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal" for="saisie-semestre">Semestre</label>
+                        <select class="saisie-modal" id="saisie-semestre" required>
+                            <option value="">Sélectionner…</option>
+                            <option value="s1">Semestre 1</option>
+                            <option value="s2">Semestre 2</option>
+                        </select>
+                    </div>
+
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal" for="saisie-credits">Nombre de crédits</label>
+                        <select class="saisie-modal" id="saisie-credits" required onchange="calculerVolume()">
+                            <option value="">Sélectionner…</option>
+                            <option value="1">1 crédit (40 séquences)</option>
+                            <option value="2">2 crédits (80 séquences)</option>
+                            <option value="3">3 crédits (120 séquences)</option>
+                            <option value="4">4 crédits (160 séquences)</option>
+                        </select>
+                    </div>
+
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal" for="saisie-niveau-contenu">Niveau de contenu</label>
+                        <select class="saisie-modal" id="saisie-niveau-contenu" required onchange="calculerVolume()">
+                            <option value="">Sélectionner…</option>
+                            <option value="1">Niveau 1 — Contenus simples + quiz</option>
+                            <option value="2">Niveau 2 — Interactif + évaluations</option>
+                            <option value="3">Niveau 3 — Simulations / serious games</option>
+                        </select>
+                    </div>
+
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal" for="saisie-type-activite">Type d'activité</label>
+                        <select class="saisie-modal" id="saisie-type-activite" required onchange="calculerVolume()">
+                            <option value="">Sélectionner…</option>
+                            <option value="creation">Création de ressources</option>
+                            <option value="mise-a-jour">Mise à jour de ressources</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- Récapitulatif du calcul des heures -->
+                <div class="carte-calcul" id="carte-calcul" style="display:none">
+                    <div class="titre-calcul">
+                        <i class="bi bi-calculator"></i>
+                        Volume horaire calculé
+                    </div>
+                    <div class="lignes-calcul">
+                        <div class="ligne-calcul">
+                            <div class="valeur-calcul" id="valeur-sequences">—</div>
+                            <div class="label-calcul">Séquences</div>
+                        </div>
+                        <div class="ligne-calcul">
+                            <div class="valeur-calcul" id="valeur-coefficient">—</div>
+                            <div class="label-calcul">Coefficient / séq.</div>
+                        </div>
+                        <div class="ligne-calcul">
+                            <div class="valeur-calcul" id="valeur-total" style="color:var(--couleur-principale)">—</div>
+                            <div class="label-calcul">Total heures</div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="pied-modal">
+            <button class="btn btn-contour" onclick="fermerModal('modal-cours')">Annuler</button>
+            <button class="btn btn-principal" onclick="soumettreFormulaireCours()">
+                <i class="bi bi-check-lg"></i>
+                Enregistrer
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- ============================================================
+     MODAL — Détail d'un cours
+     ============================================================ -->
+<div class="superposition-modal" id="modal-detail-cours" role="dialog" aria-modal="true" aria-labelledby="titre-detail-cours">
+    <div class="fenetre-modal">
+
+        <div class="en-tete-modal">
+            <div class="titre-modal">
+                <i class="bi bi-book-fill"></i>
+                <span id="titre-detail-cours">Détail du cours</span>
+            </div>
+            <button class="bouton-fermer-modal" onclick="fermerModal('modal-detail-cours')" aria-label="Fermer">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <div class="corps-modal">
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+                <div style="background:var(--couleur-fond);border-radius:9px;padding:13px 15px">
+                    <div style="font-size:11px;font-weight:600;color:var(--couleur-texte-secondaire);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Niveau</div>
+                    <div style="font-size:14px;font-weight:600" id="detail-cours-niveau"></div>
+                </div>
+                <div style="background:var(--couleur-fond);border-radius:9px;padding:13px 15px">
+                    <div style="font-size:11px;font-weight:600;color:var(--couleur-texte-secondaire);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Crédits</div>
+                    <div style="font-size:14px;font-weight:600" id="detail-cours-credits"></div>
+                </div>
+                <div style="background:var(--couleur-fond);border-radius:9px;padding:13px 15px">
+                    <div style="font-size:11px;font-weight:600;color:var(--couleur-texte-secondaire);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Niveau de contenu</div>
+                    <div style="font-size:14px;font-weight:600" id="detail-cours-niveau-contenu"></div>
+                </div>
+                <div style="background:linear-gradient(135deg,rgba(67,97,238,0.07),rgba(114,9,183,0.07));border:1px solid rgba(67,97,238,0.15);border-radius:9px;padding:13px 15px">
+                    <div style="font-size:11px;font-weight:600;color:var(--couleur-principale);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Volume horaire</div>
+                    <div style="font-size:22px;font-weight:700;color:var(--couleur-principale)" id="detail-cours-heures"></div>
+                </div>
+            </div>
+
+            <div style="background:var(--couleur-fond);border-radius:9px;padding:13px 15px">
+                <div style="font-size:11px;font-weight:600;color:var(--couleur-texte-secondaire);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Enseignant responsable</div>
+                <div style="font-size:14px;font-weight:600" id="detail-cours-enseignant"></div>
+            </div>
+
+        </div>
+
+        <div class="pied-modal">
+            <button class="btn btn-contour" onclick="fermerModal('modal-detail-cours')">Fermer</button>
+            <button class="btn btn-principal">
+                <i class="bi bi-file-earmark-arrow-down"></i>
+                Télécharger la fiche
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script src="assets/js/main.js"></script>
+<script>
+    /* --- Coefficients de calcul selon le tableau du cahier des charges --- */
+    var COEFFICIENTS = {
+        creation:    { '1': 0.40, '2': 0.75, '3': 1.5 },
+        'mise-a-jour': { '1': 0.20, '2': 0.375, '3': 0.75 }
+    };
+
+    var SEQUENCES_PAR_CREDIT = 40;
+
+    /* Calcul automatique du volume horaire */
+    function calculerVolume() {
+        var credits        = document.getElementById('saisie-credits').value;
+        var niveauContenu  = document.getElementById('saisie-niveau-contenu').value;
+        var typeActivite   = document.getElementById('saisie-type-activite').value;
+        var cartecalcul    = document.getElementById('carte-calcul');
+
+        if (!credits || !niveauContenu || !typeActivite) {
+            cartecalcul.style.display = 'none';
+            return;
+        }
+
+        var nbSequences  = parseInt(credits) * SEQUENCES_PAR_CREDIT;
+        var coefficient  = COEFFICIENTS[typeActivite][niveauContenu];
+        var totalHeures  = nbSequences * coefficient;
+
+        document.getElementById('valeur-sequences').textContent  = nbSequences;
+        document.getElementById('valeur-coefficient').textContent = coefficient.toString().replace('.', ',');
+        document.getElementById('valeur-total').textContent      = totalHeures.toFixed(1).replace('.', ',') + ' h';
+
+        cartecalcul.style.display = 'block';
+    }
+
+    /* --- Gestion des modals --- */
+    function ouvrirModal(idModal) {
+        document.getElementById(idModal).classList.add('ouverte');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function fermerModal(idModal) {
+        document.getElementById(idModal).classList.remove('ouverte');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.superposition-modal.ouverte').forEach(function(m) {
+                m.classList.remove('ouverte');
+            });
+            document.body.style.overflow = '';
+        }
+    });
+
+    document.querySelectorAll('.superposition-modal').forEach(function(modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) fermerModal(modal.id);
+        });
+    });
+
+    /* Bouton d'ajout */
+    document.getElementById('bouton-nouveau-cours').addEventListener('click', function() {
+        document.getElementById('titre-modal-cours').textContent = 'Ajouter un cours';
+        document.getElementById('formulaire-cours').reset();
+        document.getElementById('carte-calcul').style.display = 'none';
+        ouvrirModal('modal-cours');
+    });
+
+    function ouvrirModalEdition(intituleCours) {
+        document.getElementById('titre-modal-cours').textContent = 'Modifier — ' + intituleCours;
+        ouvrirModal('modal-cours');
+    }
+
+    function ouvrirModalDetail(intitule, niveau, credits, niveauContenu, heures, enseignant) {
+        document.getElementById('titre-detail-cours').textContent = intitule;
+        document.getElementById('detail-cours-niveau').textContent         = niveau;
+        document.getElementById('detail-cours-credits').textContent        = credits;
+        document.getElementById('detail-cours-niveau-contenu').textContent = niveauContenu;
+        document.getElementById('detail-cours-heures').textContent         = heures;
+        document.getElementById('detail-cours-enseignant').textContent     = enseignant;
+        ouvrirModal('modal-detail-cours');
+    }
+
+    function soumettreFormulaireCours() {
+        var intitule  = document.getElementById('saisie-intitule').value.trim();
+        var filiere   = document.getElementById('saisie-filiere').value;
+        var niveau    = document.getElementById('saisie-niveau-cours').value;
+        var credits   = document.getElementById('saisie-credits').value;
+
+        if (!intitule || !filiere || !niveau || !credits) {
+            afficherToast('Veuillez remplir tous les champs obligatoires.', 'avertissement');
+            return;
+        }
+
+        /* Appel API Laravel en production */
+        afficherToast('Cours enregistré avec succès.', 'succes');
+        fermerModal('modal-cours');
+        document.getElementById('formulaire-cours').reset();
+        document.getElementById('carte-calcul').style.display = 'none';
+    }
+
+    /* Sélection globale */
+    document.getElementById('tout-selectionner').addEventListener('change', function() {
+        document.querySelectorAll('#tableau-principal tbody input[type="checkbox"]')
+            .forEach(function(c) { c.checked = this.checked; }, this);
+    });
+</script>
+
+</body>
+</html>

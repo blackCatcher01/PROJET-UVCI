@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord — UVCI Gestion des Heures</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- Superposition pour fermer la barre sur mobile -->
+<div id="superposition-mobile"></div>
+
+<div id="enveloppe">
+
+    <!-- ========================================================
+         BARRE LATÉRALE
+         ======================================================== -->
+    <aside id="barre-laterale">
+
+        <!-- Logo -->
+        <div class="logo-barre">
+            <div class="logo-icone">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <div>
+                <div class="logo-nom">UVCI</div>
+                <div class="logo-sous-titre">Heures Enseignants</div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="navigation-barre" aria-label="Navigation principale">
+
+            <div class="groupe-navigation">
+                <a href="tableau-de-bord.html" class="lien-navigation actif">
+                    <i class="bi bi-grid-1x2"></i>
+                    Tableau de bord
+                </a>
+            </div>
+
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Gestion</div>
+                <a href="enseignants.html" class="lien-navigation">
+                    <i class="bi bi-people"></i>
+                    Enseignants
+                </a>
+                <a href="cours.html" class="lien-navigation">
+                    <i class="bi bi-book"></i>
+                    Cours
+                </a>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-collection"></i>
+                    Ressources pédagogiques
+                </a>
+            </div>
+
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Suivi</div>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-activity"></i>
+                    Activités pédagogiques
+                </a>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-calculator"></i>
+                    Calcul des heures
+                </a>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-check2-circle"></i>
+                    Validations
+                    <span class="badge-nav">5</span>
+                </a>
+            </div>
+
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Rapports</div>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    États récapitulatifs
+                </a>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-download"></i>
+                    Exports
+                </a>
+            </div>
+
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Système</div>
+                <a href="#" class="lien-navigation">
+                    <i class="bi bi-gear"></i>
+                    Paramètres
+                </a>
+            </div>
+
+        </nav>
+
+        <!-- Profil en bas de barre -->
+        <div class="profil-barre">
+            <div class="avatar-profil">AK</div>
+            <div class="info-profil">
+                <div class="nom-profil">Admin UVCI</div>
+                <div class="role-profil">Administrateur</div>
+            </div>
+            <button class="bouton-deconnexion" title="Se déconnecter" onclick="window.location.href='connexion.html'">
+                <i class="bi bi-box-arrow-right"></i>
+            </button>
+        </div>
+
+    </aside>
+    <!-- fin #barre-laterale -->
+
+    <!-- ========================================================
+         CONTENU PRINCIPAL
+         ======================================================== -->
+    <div id="contenu-principal">
+
+        <!-- Barre de navigation supérieure -->
+        <header id="barre-navigation">
+            <div class="navigation-gauche">
+                <button class="bouton-basculer" id="bouton-basculer" aria-label="Ouvrir ou fermer la barre latérale">
+                    <i class="bi bi-list"></i>
+                </button>
+                <nav class="fil-ariane" aria-label="Chemin de navigation">
+                    <span>UVCI</span>
+                    <span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span>
+                    <span>Tableau de bord</span>
+                </nav>
+            </div>
+            <div class="navigation-droite">
+                <button class="bouton-icone-nav" title="Notifications">
+                    <i class="bi bi-bell"></i>
+                    <span class="pastille-notif"></span>
+                </button>
+                <button class="bouton-icone-nav" title="Messages">
+                    <i class="bi bi-envelope"></i>
+                </button>
+                <div class="separateur-nav"></div>
+                <div class="mini-profil-nav">
+                    <div class="mini-avatar-nav">AK</div>
+                    <span class="mini-nom-nav">Admin UVCI</span>
+                    <i class="bi bi-chevron-down" style="font-size:12px;color:var(--couleur-texte-secondaire)"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Zone de contenu -->
+        <main id="zone-contenu">
+
+            <!-- En-tête de la page -->
+            <div class="en-tete-page">
+                <div class="groupe-titre">
+                    <h1 class="titre-page">Tableau de bord</h1>
+                    <p class="sous-titre-page">Année académique 2025–2026 — Vue d'ensemble</p>
+                </div>
+                <div class="actions-page">
+                    <button class="btn btn-contour">
+                        <i class="bi bi-download"></i>
+                        Exporter
+                    </button>
+                    <button class="btn btn-principal">
+                        <i class="bi bi-plus-lg"></i>
+                        Nouvel enseignant
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================================================
+                 CARTES STATISTIQUES
+                 ================================================ -->
+            <div class="grille-statistiques">
+
+                <div class="carte-statistique">
+                    <div class="etiquette-stat">Enseignants actifs</div>
+                    <div class="valeur-stat">124</div>
+                    <div class="evolution-stat hausse">
+                        <i class="bi bi-arrow-up-short"></i>
+                        +8 ce semestre
+                    </div>
+                    <i class="bi bi-people icone-fond-stat"></i>
+                </div>
+
+                <div class="carte-statistique accent-succes">
+                    <div class="etiquette-stat">Heures calculées</div>
+                    <div class="valeur-stat">8 346</div>
+                    <div class="evolution-stat hausse">
+                        <i class="bi bi-arrow-up-short"></i>
+                        +12% vs an dernier
+                    </div>
+                    <i class="bi bi-clock-history icone-fond-stat"></i>
+                </div>
+
+                <div class="carte-statistique accent-avertissement">
+                    <div class="etiquette-stat">Cours actifs</div>
+                    <div class="valeur-stat">342</div>
+                    <div class="evolution-stat">
+                        Tous semestres confondus
+                    </div>
+                    <i class="bi bi-book icone-fond-stat"></i>
+                </div>
+
+                <div class="carte-statistique accent-danger">
+                    <div class="etiquette-stat">En attente de validation</div>
+                    <div class="valeur-stat">17</div>
+                    <div class="evolution-stat baisse">
+                        <i class="bi bi-exclamation-circle"></i>
+                        Action requise
+                    </div>
+                    <i class="bi bi-hourglass-split icone-fond-stat"></i>
+                </div>
+
+            </div>
+            <!-- fin .grille-statistiques -->
+
+            <!-- ================================================
+                 GRAPHIQUE + ACTIVITÉS RÉCENTES
+                 ================================================ -->
+            <div class="grille-trois-un">
+
+                <!-- Graphique des heures par département -->
+                <div class="carte">
+                    <div class="en-tete-carte">
+                        <div class="titre-carte">
+                            <i class="bi bi-bar-chart"></i>
+                            Heures par département
+                        </div>
+                        <div class="barre-outils">
+                            <select class="selecteur-filtre" style="font-size:12px;padding:5px 28px 5px 10px" id="filtre-periode-graphique">
+                                <option value="semestre1">Semestre 1</option>
+                                <option value="semestre2" selected>Semestre 2</option>
+                                <option value="annee">Année complète</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="corps-carte">
+                        <div class="conteneur-graphique">
+                            <canvas id="graphique-departements"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Résumé rapide -->
+                <div class="carte">
+                    <div class="en-tete-carte">
+                        <div class="titre-carte">
+                            <i class="bi bi-pie-chart"></i>
+                            Répartition
+                        </div>
+                    </div>
+                    <div class="corps-carte" style="padding:16px">
+
+                        <div style="margin-bottom:20px">
+                            <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px">
+                                <span style="color:var(--couleur-texte-secondaire)">Permanents</span>
+                                <span style="font-weight:700">68%</span>
+                            </div>
+                            <div style="height:6px;background:var(--couleur-bordure);border-radius:3px;overflow:hidden">
+                                <div style="height:100%;width:68%;background:var(--couleur-principale);border-radius:3px"></div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom:20px">
+                            <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px">
+                                <span style="color:var(--couleur-texte-secondaire)">Vacataires</span>
+                                <span style="font-weight:700">32%</span>
+                            </div>
+                            <div style="height:6px;background:var(--couleur-bordure);border-radius:3px;overflow:hidden">
+                                <div style="height:100%;width:32%;background:var(--couleur-avertissement);border-radius:3px"></div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom:20px">
+                            <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px">
+                                <span style="color:var(--couleur-texte-secondaire)">Niveau 1</span>
+                                <span style="font-weight:700">45%</span>
+                            </div>
+                            <div style="height:6px;background:var(--couleur-bordure);border-radius:3px;overflow:hidden">
+                                <div style="height:100%;width:45%;background:var(--couleur-info);border-radius:3px"></div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom:20px">
+                            <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px">
+                                <span style="color:var(--couleur-texte-secondaire)">Niveau 2</span>
+                                <span style="font-weight:700">38%</span>
+                            </div>
+                            <div style="height:6px;background:var(--couleur-bordure);border-radius:3px;overflow:hidden">
+                                <div style="height:100%;width:38%;background:var(--couleur-succes);border-radius:3px"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:6px">
+                                <span style="color:var(--couleur-texte-secondaire)">Niveau 3</span>
+                                <span style="font-weight:700">17%</span>
+                            </div>
+                            <div style="height:6px;background:var(--couleur-bordure);border-radius:3px;overflow:hidden">
+                                <div style="height:100%;width:17%;background:var(--couleur-secondaire);border-radius:3px"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <!-- fin .grille-trois-un -->
+
+            <!-- ================================================
+                 ACTIVITÉS RÉCENTES + VALIDATIONS EN ATTENTE
+                 ================================================ -->
+            <div class="grille-deux-colonnes">
+
+                <!-- Activités récentes -->
+                <div class="carte">
+                    <div class="en-tete-carte">
+                        <div class="titre-carte">
+                            <i class="bi bi-clock"></i>
+                            Activités récentes
+                        </div>
+                        <a href="#" style="font-size:12.5px;color:var(--couleur-principale);font-weight:600">Voir tout</a>
+                    </div>
+
+                    <div class="activite-element">
+                        <div class="icone-activite validation"><i class="bi bi-check-lg"></i></div>
+                        <div>
+                            <div class="texte-activite"><strong>Konan Yao Jean-Paul</strong> — heures validées pour Prog. Web (L2)</div>
+                            <div class="temps-activite">Il y a 12 minutes</div>
+                        </div>
+                    </div>
+
+                    <div class="activite-element">
+                        <div class="icone-activite ajout"><i class="bi bi-plus-lg"></i></div>
+                        <div>
+                            <div class="texte-activite">Nouveau cours ajouté : <strong>Base de données avancées</strong> — 3 crédits (L3)</div>
+                            <div class="temps-activite">Il y a 45 minutes</div>
+                        </div>
+                    </div>
+
+                    <div class="activite-element">
+                        <div class="icone-activite modification"><i class="bi bi-pencil"></i></div>
+                        <div>
+                            <div class="texte-activite"><strong>Djeninba Traoré</strong> — mise à jour des ressources de Algorithmique (L2)</div>
+                            <div class="temps-activite">Il y a 2 heures</div>
+                        </div>
+                    </div>
+
+                    <div class="activite-element">
+                        <div class="icone-activite ajout"><i class="bi bi-person-plus"></i></div>
+                        <div>
+                            <div class="texte-activite">Nouvel enseignant enregistré : <strong>Dr. Ameku Kephas</strong> — Département Informatique</div>
+                            <div class="temps-activite">Hier, 14:32</div>
+                        </div>
+                    </div>
+
+                    <div class="activite-element">
+                        <div class="icone-activite validation"><i class="bi bi-check-lg"></i></div>
+                        <div>
+                            <div class="texte-activite"><strong>Dah Sébastien</strong> — saisie des activités du semestre 2 confirmée</div>
+                            <div class="temps-activite">Hier, 09:15</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Validations en attente -->
+                <div class="carte">
+                    <div class="en-tete-carte">
+                        <div class="titre-carte">
+                            <i class="bi bi-hourglass"></i>
+                            Validations en attente
+                        </div>
+                        <span class="badge badge-danger">17</span>
+                    </div>
+
+                    <div class="conteneur-tableau">
+                        <table class="tableau-donnees">
+                            <thead>
+                                <tr>
+                                    <th>Enseignant</th>
+                                    <th>Cours</th>
+                                    <th>Heures</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="cellule-personne">
+                                            <div class="avatar-tableau bleu">KY</div>
+                                            <div class="nom-cellule">Konan Yao</div>
+                                        </div>
+                                    </td>
+                                    <td class="texte-secondaire-tableau">Algo. L1</td>
+                                    <td><strong>32 h</strong></td>
+                                    <td>
+                                        <div class="actions-tableau">
+                                            <button class="btn btn-petit btn-succes" onclick="afficherToast('Activité validée avec succès.', 'succes')">
+                                                <i class="bi bi-check-lg"></i>
+                                                Valider
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="cellule-personne">
+                                            <div class="avatar-tableau vert">DT</div>
+                                            <div class="nom-cellule">Djeninba T.</div>
+                                        </div>
+                                    </td>
+                                    <td class="texte-secondaire-tableau">BDD L2</td>
+                                    <td><strong>60 h</strong></td>
+                                    <td>
+                                        <div class="actions-tableau">
+                                            <button class="btn btn-petit btn-succes" onclick="afficherToast('Activité validée avec succès.', 'succes')">
+                                                <i class="bi bi-check-lg"></i>
+                                                Valider
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="cellule-personne">
+                                            <div class="avatar-tableau orange">GD</div>
+                                            <div class="nom-cellule">Gerard D.</div>
+                                        </div>
+                                    </td>
+                                    <td class="texte-secondaire-tableau">Réseau L3</td>
+                                    <td><strong>120 h</strong></td>
+                                    <td>
+                                        <div class="actions-tableau">
+                                            <button class="btn btn-petit btn-succes" onclick="afficherToast('Activité validée avec succès.', 'succes')">
+                                                <i class="bi bi-check-lg"></i>
+                                                Valider
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="cellule-personne">
+                                            <div class="avatar-tableau violet">DS</div>
+                                            <div class="nom-cellule">Dah Sébastien</div>
+                                        </div>
+                                    </td>
+                                    <td class="texte-secondaire-tableau">Web L2</td>
+                                    <td><strong>30 h</strong></td>
+                                    <td>
+                                        <div class="actions-tableau">
+                                            <button class="btn btn-petit btn-succes" onclick="afficherToast('Activité validée avec succès.', 'succes')">
+                                                <i class="bi bi-check-lg"></i>
+                                                Valider
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pied-carte" style="text-align:center">
+                        <a href="#" style="font-size:12.5px;color:var(--couleur-principale);font-weight:600">Gérer toutes les validations →</a>
+                    </div>
+                </div>
+
+            </div>
+            <!-- fin .grille-deux-colonnes -->
+
+        </main>
+
+        <!-- Pied de page -->
+        <footer id="pied-page">
+            © 2026 Université Virtuelle de Côte d'Ivoire — Application de gestion des heures des enseignants
+        </footer>
+
+    </div>
+    <!-- fin #contenu-principal -->
+
+</div>
+<!-- fin #enveloppe -->
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- Scripts -->
+<script src="assets/js/main.js"></script>
+<script>
+    /* Graphique des heures par département */
+    document.addEventListener('DOMContentLoaded', function () {
+        const contexte = document.getElementById('graphique-departements').getContext('2d');
+
+        new Chart(contexte, {
+            type: 'bar',
+            data: {
+                labels: ['Informatique', 'Mathématiques', 'Sciences', 'Gestion', 'Droit', 'Langues'],
+                datasets: [{
+                    label: 'Heures calculées',
+                    data: [2140, 1680, 1520, 1340, 960, 706],
+                    backgroundColor: [
+                        'rgba(67, 97, 238, 0.82)',
+                        'rgba(5, 196, 138, 0.82)',
+                        'rgba(76, 201, 240, 0.82)',
+                        'rgba(247, 183, 49, 0.82)',
+                        'rgba(114, 9, 183, 0.82)',
+                        'rgba(230, 57, 80, 0.82)'
+                    ],
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function (ctx) {
+                                return ctx.parsed.y.toLocaleString('fr-FR') + ' heures';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: {
+                            font: { family: 'Plus Jakarta Sans, Inter, sans-serif', size: 11 },
+                            color: '#8B94B2',
+                            callback: function (v) { return v.toLocaleString('fr-FR'); }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { family: 'Plus Jakarta Sans, Inter, sans-serif', size: 11 },
+                            color: '#8B94B2'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

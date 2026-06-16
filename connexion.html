@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion — UVCI Gestion des Heures</title>
+    <meta name="description" content="Application de gestion des heures des enseignants — Université Virtuelle de Côte d'Ivoire">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Styles de la page de connexion -->
+    <link rel="stylesheet" href="assets/css/connexion.css">
+</head>
+<body>
+
+<div class="page-connexion">
+
+    <!-- ========================================================
+         PANNEAU GAUCHE — Présentation de l'application
+         ======================================================== -->
+    <div class="panneau-gauche">
+
+        <!-- Logo -->
+        <div class="logo-connexion">
+            <div class="logo-connexion-icone">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <div>
+                <div class="logo-connexion-nom">UVCI</div>
+                <div class="logo-connexion-sstitre">Gestion des heures</div>
+            </div>
+        </div>
+
+        <!-- Slogan central -->
+        <div class="contenu-panneau">
+            <h1 class="slogan-connexion">
+                Gérez les heures pédagogiques <span>en toute simplicité</span>
+            </h1>
+            <p class="description-connexion">
+                Automatisez le calcul des volumes horaires, suivez les activités pédagogiques et générez vos états récapitulatifs en quelques clics.
+            </p>
+        </div>
+
+        <!-- Statistiques en bas -->
+        <div class="statistiques-panneau">
+            <div class="stat-panneau">
+                <div class="valeur-stat-panneau">120+</div>
+                <div class="label-stat-panneau">Enseignants</div>
+            </div>
+            <div class="stat-panneau">
+                <div class="valeur-stat-panneau">340</div>
+                <div class="label-stat-panneau">Cours actifs</div>
+            </div>
+            <div class="stat-panneau">
+                <div class="valeur-stat-panneau">98%</div>
+                <div class="label-stat-panneau">Précision</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ========================================================
+         PANNEAU DROIT — Formulaire de connexion
+         ======================================================== -->
+    <div class="panneau-droite">
+
+        <div class="en-tete-formulaire">
+            <h2 class="titre-formulaire">Connexion</h2>
+            <p class="sous-titre-formulaire">Saisissez vos identifiants pour accéder à votre espace.</p>
+        </div>
+
+        <!-- Alerte d'erreur globale -->
+        <div class="alerte-connexion erreur" id="alerte-erreur" role="alert" style="display:none">
+            <i class="bi bi-exclamation-circle"></i>
+            <span>Identifiants incorrects.</span>
+        </div>
+
+        <!-- Formulaire -->
+        <form id="formulaire-connexion" novalidate>
+
+            <!-- Champ e-mail -->
+            <div class="groupe-champ">
+                <label class="etiquette-champ" for="champ-email">Adresse e-mail</label>
+                <div class="enveloppe-champ">
+                    <i class="bi bi-envelope icone-prefixe"></i>
+                    <input
+                        class="champ-saisie"
+                        type="email"
+                        id="champ-email"
+                        name="email"
+                        placeholder="exemple@uvci.edu.ci"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+                <div class="message-erreur" id="erreur-email" role="alert">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span></span>
+                </div>
+            </div>
+
+            <!-- Champ mot de passe -->
+            <div class="groupe-champ">
+                <label class="etiquette-champ" for="champ-mot-de-passe">Mot de passe</label>
+                <div class="enveloppe-champ">
+                    <i class="bi bi-lock icone-prefixe"></i>
+                    <input
+                        class="champ-saisie"
+                        type="password"
+                        id="champ-mot-de-passe"
+                        name="mot_de_passe"
+                        placeholder="••••••••"
+                        autocomplete="current-password"
+                        required
+                    >
+                    <button type="button" class="bouton-visibilite" id="bouton-visibilite-mdp" aria-label="Afficher ou masquer le mot de passe">
+                        <i class="bi bi-eye" id="icone-visibilite"></i>
+                    </button>
+                </div>
+                <div class="message-erreur" id="erreur-mot-de-passe" role="alert">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span></span>
+                </div>
+            </div>
+
+            <!-- Se souvenir + Mot de passe oublié -->
+            <div class="options-connexion">
+                <label class="case-memoriser">
+                    <input type="checkbox" id="memoriser" name="memoriser">
+                    Se souvenir de moi
+                </label>
+                <a href="#" class="lien-mot-de-passe-oublie">Mot de passe oublié ?</a>
+            </div>
+
+            <!-- Bouton de connexion -->
+            <button type="submit" class="bouton-connexion" id="bouton-connexion">
+                <i class="bi bi-arrow-right-circle icone-normale"></i>
+                <i class="bi bi-arrow-repeat icone-chargement" style="display:none;animation:rotation 0.7s linear infinite"></i>
+                <span class="texte-bouton">Se connecter</span>
+            </button>
+
+        </form>
+
+        <!-- Comptes de démonstration -->
+        <div class="pied-formulaire">
+            <p style="margin-bottom:10px">Comptes de démonstration :</p>
+            <div style="display:flex;flex-direction:column;gap:5px;text-align:left;background:#F8FAFF;border:1px solid #E3E8F0;border-radius:9px;padding:12px 14px">
+                <code style="font-size:12px;color:#4361EE">admin@uvci.edu.ci / admin2026</code>
+                <code style="font-size:12px;color:#4361EE">secretaire@uvci.edu.ci / secret2026</code>
+                <code style="font-size:12px;color:#4361EE">enseignant@uvci.edu.ci / prof2026</code>
+            </div>
+        </div>
+
+    </div>
+    <!-- fin .panneau-droite -->
+
+</div>
+<!-- fin .page-connexion -->
+
+<!-- Script de la page -->
+<script src="assets/js/connexion.js"></script>
+
+</body>
+</html>
