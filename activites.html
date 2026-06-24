@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activités pédagogiques — UVCI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .superposition-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;align-items:center;justify-content:center;padding:16px;}
+        .superposition-modal.ouverte{display:flex;}
+        .fenetre-modal{background:var(--couleur-carte);border-radius:var(--rayon-carte);width:100%;max-width:600px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,0.2);animation:om 0.22s ease;}
+        @keyframes om{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+        .en-tete-modal{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--couleur-bordure);flex-shrink:0;}
+        .titre-modal{font-size:16px;font-weight:700;color:var(--couleur-texte-principal);display:flex;align-items:center;gap:8px;}
+        .titre-modal i{color:var(--couleur-principale);font-size:19px;}
+        .bouton-fermer-modal{width:32px;height:32px;border:none;background:var(--couleur-fond);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--couleur-texte-secondaire);transition:var(--transition);}
+        .bouton-fermer-modal:hover{background:var(--couleur-danger);color:#fff;}
+        .corps-modal{padding:24px;overflow-y:auto;flex:1;}
+        .pied-modal{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid var(--couleur-bordure);background:var(--couleur-fond);border-radius:0 0 var(--rayon-carte) var(--rayon-carte);flex-shrink:0;}
+        .grille-formulaire{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+        .grille-formulaire .champ-pleine-largeur{grid-column:1/-1;}
+        .groupe-champ-modal{display:flex;flex-direction:column;gap:5px;}
+        .etiquette-modal{font-size:12.5px;font-weight:600;color:var(--couleur-texte-principal);}
+        .saisie-modal{padding:9px 12px;border:1.5px solid var(--couleur-bordure);border-radius:var(--rayon-element);font-size:13.5px;font-family:var(--police);color:var(--couleur-texte-principal);background:#F8FAFF;outline:none;transition:var(--transition);width:100%;}
+        .saisie-modal:focus{border-color:var(--couleur-principale);background:#fff;box-shadow:0 0 0 3px rgba(67,97,238,0.1);}
+        select.saisie-modal{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B94B2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;cursor:pointer;}
+        .carte-calcul{background:linear-gradient(135deg,rgba(67,97,238,0.06),rgba(114,9,183,0.06));border:1px solid rgba(67,97,238,0.15);border-radius:10px;padding:14px 16px;margin-top:16px;}
+        .titre-calcul{font-size:12px;font-weight:700;color:var(--couleur-principale);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+        .lignes-calcul{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+        .ligne-calcul{text-align:center;}
+        .valeur-calcul{font-size:20px;font-weight:700;color:var(--couleur-texte-principal);}
+        .label-calcul{font-size:10.5px;color:var(--couleur-texte-secondaire);margin-top:2px;}
+        .indicateur-statut{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;}
+        .statut-en-attente{background:#FEF5E0;color:#B07A00;}
+        .statut-valide{background:#E7FBF3;color:#049566;}
+        .statut-rejete{background:#FDEEF0;color:#C42B3C;}
+        .statut-verrouille{background:#EEF2F7;color:#4B5563;}
+        .timeline-statut{display:flex;align-items:center;gap:0;margin:16px 0;}
+        .etape-timeline{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;}
+        .etape-timeline:not(:last-child)::after{content:'';position:absolute;top:14px;left:50%;right:-50%;height:2px;background:var(--couleur-bordure);z-index:0;}
+        .etape-timeline.active:not(:last-child)::after{background:var(--couleur-succes);}
+        .cercle-etape{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;z-index:1;border:2px solid var(--couleur-bordure);background:white;color:var(--couleur-texte-secondaire);}
+        .etape-timeline.active .cercle-etape{border-color:var(--couleur-succes);background:var(--couleur-succes);color:white;}
+        .etape-timeline.courante .cercle-etape{border-color:var(--couleur-principale);background:var(--couleur-principale);color:white;}
+        .label-etape{font-size:10px;color:var(--couleur-texte-secondaire);margin-top:5px;text-align:center;white-space:nowrap;}
+        .etape-timeline.active .label-etape,.etape-timeline.courante .label-etape{color:var(--couleur-texte-principal);font-weight:600;}
+    </style>
+</head>
+<body>
+<div id="superposition-mobile"></div>
+<div id="enveloppe">
+
+    <aside id="barre-laterale">
+        <div class="logo-barre">
+            <div class="logo-icone"><i class="bi bi-mortarboard-fill"></i></div>
+            <div><div class="logo-nom">UVCI</div><div class="logo-sous-titre">Heures Enseignants</div></div>
+        </div>
+        <nav class="navigation-barre">
+            <div class="groupe-navigation">
+                <a href="tableau-de-bord.html" class="lien-navigation"><i class="bi bi-grid-1x2"></i>Tableau de bord</a>
+            </div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Gestion</div>
+                <a href="enseignants.html" class="lien-navigation"><i class="bi bi-people"></i>Enseignants</a>
+                <a href="cours.html" class="lien-navigation"><i class="bi bi-book"></i>Cours</a>
+                <a href="sequences.html" class="lien-navigation"><i class="bi bi-collection"></i>Séquences pédagogiques</a>
+                <a href="ressources.html" class="lien-navigation"><i class="bi bi-file-earmark-richtext"></i>Ressources pédagogiques</a>
+            </div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Suivi</div>
+                <a href="activites.html" class="lien-navigation actif"><i class="bi bi-activity"></i>Activités pédagogiques</a>
+                <a href="calcul-heures.html" class="lien-navigation"><i class="bi bi-calculator"></i>Calcul des heures</a>
+                <a href="validations.html" class="lien-navigation"><i class="bi bi-check2-circle"></i>Validations<span class="badge-nav">5</span></a>
+            </div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Rapports</div>
+                <a href="etats-recapitulatifs.html" class="lien-navigation"><i class="bi bi-file-earmark-bar-graph"></i>États récapitulatifs</a>
+            </div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Système</div>
+                <a href="parametres.html" class="lien-navigation"><i class="bi bi-gear"></i>Paramètres</a>
+            </div>
+        </nav>
+        <div class="profil-barre">
+            <div class="avatar-profil">AK</div>
+            <div class="info-profil"><div class="nom-profil">Admin UVCI</div><div class="role-profil">Administrateur</div></div>
+            <button class="bouton-deconnexion" onclick="window.location.href='connexion.html'"><i class="bi bi-box-arrow-right"></i></button>
+        </div>
+    </aside>
+
+    <div id="contenu-principal">
+        <header id="barre-navigation">
+            <div class="navigation-gauche">
+                <button class="bouton-basculer" id="bouton-basculer"><i class="bi bi-list"></i></button>
+                <nav class="fil-ariane">
+                    <span>UVCI</span><span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span>
+                    <span>Suivi</span><span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span>
+                    <span>Activités pédagogiques</span>
+                </nav>
+            </div>
+            <div class="navigation-droite">
+                <button class="bouton-icone-nav"><i class="bi bi-bell"></i><span class="pastille-notif"></span></button>
+                <div class="separateur-nav"></div>
+                <div class="mini-profil-nav">
+                    <div class="mini-avatar-nav">AK</div>
+                    <span class="mini-nom-nav">Admin UVCI</span>
+                </div>
+            </div>
+        </header>
+
+        <main id="zone-contenu">
+            <div class="en-tete-page">
+                <div class="groupe-titre">
+                    <h1 class="titre-page">Activités pédagogiques</h1>
+                    <p class="sous-titre-page">Déclaration et suivi des activités — Calcul automatique des volumes horaires</p>
+                </div>
+                <div class="actions-page">
+                    <button class="btn btn-contour"><i class="bi bi-download"></i>Exporter</button>
+                    <button class="btn btn-principal" id="bouton-nouvelle-activite"><i class="bi bi-plus-lg"></i>Déclarer une activité</button>
+                </div>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="grille-statistiques" style="margin-bottom:20px">
+                <div class="carte-statistique" style="padding:16px 18px">
+                    <div class="etiquette-stat">Total activités</div>
+                    <div class="valeur-stat" style="font-size:26px">248</div>
+                    <div class="evolution-stat">Toutes années</div>
+                    <i class="bi bi-activity icone-fond-stat"></i>
+                </div>
+                <div class="carte-statistique accent-avertissement" style="padding:16px 18px">
+                    <div class="etiquette-stat">En attente</div>
+                    <div class="valeur-stat" style="font-size:26px">17</div>
+                    <div class="evolution-stat baisse"><i class="bi bi-exclamation-circle"></i> À valider</div>
+                    <i class="bi bi-hourglass icone-fond-stat"></i>
+                </div>
+                <div class="carte-statistique accent-succes" style="padding:16px 18px">
+                    <div class="etiquette-stat">Validées</div>
+                    <div class="valeur-stat" style="font-size:26px">224</div>
+                    <div class="evolution-stat hausse"><i class="bi bi-arrow-up-short"></i>+12 ce mois</div>
+                    <i class="bi bi-check-circle icone-fond-stat"></i>
+                </div>
+                <div class="carte-statistique accent-danger" style="padding:16px 18px">
+                    <div class="etiquette-stat">Rejetées</div>
+                    <div class="valeur-stat" style="font-size:26px">7</div>
+                    <div class="evolution-stat">À corriger</div>
+                    <i class="bi bi-x-circle icone-fond-stat"></i>
+                </div>
+            </div>
+
+            <!-- Tableau -->
+            <div class="carte">
+                <div class="en-tete-carte">
+                    <div class="titre-carte"><i class="bi bi-table"></i>Liste des activités déclarées</div>
+                    <div class="barre-outils">
+                        <div class="champ-recherche">
+                            <i class="bi bi-search"></i>
+                            <input type="text" id="champ-recherche-tableau" placeholder="Rechercher…">
+                        </div>
+                        <select class="selecteur-filtre" id="filtre-statut">
+                            <option value="">Tous les statuts</option>
+                            <option value="En attente">En attente</option>
+                            <option value="Validée">Validées</option>
+                            <option value="Rejetée">Rejetées</option>
+                        </select>
+                        <select class="selecteur-filtre" id="filtre-type">
+                            <option value="">Tous types</option>
+                            <option value="Création">Création</option>
+                            <option value="Mise à jour">Mise à jour</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="conteneur-tableau">
+                    <table class="tableau-donnees" id="tableau-principal">
+                        <thead>
+                            <tr>
+                                <th>Enseignant</th>
+                                <th>Cours</th>
+                                <th class="colonne-masquable">Type d'action</th>
+                                <th class="colonne-masquable">Niv. contenu</th>
+                                <th>Vol. horaire</th>
+                                <th>Statut</th>
+                                <th class="colonne-masquable">Date saisie</th>
+                                <th style="text-align:right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><div class="cellule-personne"><div class="avatar-tableau bleu">KY</div><div class="nom-cellule">Konan Yao J-P</div></div></td>
+                                <td><div style="font-weight:600">Prog. Web</div><div class="detail-cellule">L2 — 2 crédits</div></td>
+                                <td class="colonne-masquable"><span class="badge badge-info"><i class="bi bi-plus-circle"></i> Création</span></td>
+                                <td class="colonne-masquable"><span class="badge badge-neutre">Niveau 2</span></td>
+                                <td><strong style="color:var(--couleur-principale)">60 h</strong></td>
+                                <td><span class="badge badge-succes"><i class="bi bi-check-lg"></i> Validée</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">12/06/2026</td>
+                                <td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" title="Voir le détail" onclick="ouvrirDetail('Konan Yao Jean-Paul','Programmation Web','Création','Niveau 2','60 h','valide')"><i class="bi bi-eye"></i></button></div></td>
+                            </tr>
+                            <tr>
+                                <td><div class="cellule-personne"><div class="avatar-tableau vert">DT</div><div class="nom-cellule">Djeninba Traoré</div></div></td>
+                                <td><div style="font-weight:600">BDD Avancées</div><div class="detail-cellule">L3 — 3 crédits</div></td>
+                                <td class="colonne-masquable"><span class="badge badge-info"><i class="bi bi-plus-circle"></i> Création</span></td>
+                                <td class="colonne-masquable"><span class="badge badge-neutre">Niveau 3</span></td>
+                                <td><strong style="color:var(--couleur-principale)">120 h</strong></td>
+                                <td><span class="badge badge-avertissement"><i class="bi bi-clock"></i> En attente</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">14/06/2026</td>
+                                <td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="ouvrirDetail('Djeninba Traoré','BDD Avancées','Création','Niveau 3','120 h','en-attente')"><i class="bi bi-eye"></i></button><button class="btn-icone" onclick="ouvrirModalEdition('Djeninba Traoré')"><i class="bi bi-pencil"></i></button></div></td>
+                            </tr>
+                            <tr>
+                                <td><div class="cellule-personne"><div class="avatar-tableau orange">GD</div><div class="nom-cellule">Gerard Deungo</div></div></td>
+                                <td><div style="font-weight:600">Réseaux</div><div class="detail-cellule">M1 — 4 crédits</div></td>
+                                <td class="colonne-masquable"><span class="badge badge-violet"><i class="bi bi-arrow-repeat"></i> Mise à jour</span></td>
+                                <td class="colonne-masquable"><span class="badge badge-neutre">Niveau 3</span></td>
+                                <td><strong style="color:var(--couleur-principale)">120 h</strong></td>
+                                <td><span class="badge badge-avertissement"><i class="bi bi-clock"></i> En attente</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">15/06/2026</td>
+                                <td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="ouvrirDetail('Gerard Deungo','Réseaux','Mise à jour','Niveau 3','120 h','en-attente')"><i class="bi bi-eye"></i></button><button class="btn-icone" onclick="ouvrirModalEdition('Gerard Deungo')"><i class="bi bi-pencil"></i></button></div></td>
+                            </tr>
+                            <tr>
+                                <td><div class="cellule-personne"><div class="avatar-tableau violet">DS</div><div class="nom-cellule">Dah Sébastien</div></div></td>
+                                <td><div style="font-weight:600">Intro Prog.</div><div class="detail-cellule">L1 — 1 crédit</div></td>
+                                <td class="colonne-masquable"><span class="badge badge-info"><i class="bi bi-plus-circle"></i> Création</span></td>
+                                <td class="colonne-masquable"><span class="badge badge-neutre">Niveau 2</span></td>
+                                <td><strong style="color:var(--couleur-principale)">30 h</strong></td>
+                                <td><span class="badge badge-danger"><i class="bi bi-x-lg"></i> Rejetée</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">10/06/2026</td>
+                                <td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="ouvrirDetail('Dah Sébastien','Intro Prog.','Création','Niveau 2','30 h','rejete')"><i class="bi bi-eye"></i></button><button class="btn-icone" onclick="ouvrirModalEdition('Dah Sébastien')"><i class="bi bi-pencil"></i></button></div></td>
+                            </tr>
+                            <tr>
+                                <td><div class="cellule-personne"><div class="avatar-tableau cyan">AK</div><div class="nom-cellule">Ameku Kephas</div></div></td>
+                                <td><div style="font-weight:600">Algorithmique</div><div class="detail-cellule">L1 — 2 crédits</div></td>
+                                <td class="colonne-masquable"><span class="badge badge-violet"><i class="bi bi-arrow-repeat"></i> Mise à jour</span></td>
+                                <td class="colonne-masquable"><span class="badge badge-neutre">Niveau 1</span></td>
+                                <td><strong style="color:var(--couleur-principale)">16 h</strong></td>
+                                <td><span class="badge badge-succes"><i class="bi bi-check-lg"></i> Validée</span></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">08/06/2026</td>
+                                <td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="ouvrirDetail('Ameku Kephas','Algorithmique','Mise à jour','Niveau 1','16 h','valide')"><i class="bi bi-eye"></i></button></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="conteneur-pagination">
+                    <span>Affichage de <strong>5</strong> sur <strong>248</strong> activités</span>
+                    <div class="pagination">
+                        <button class="bouton-page"><i class="bi bi-chevron-left"></i></button>
+                        <button class="bouton-page actif">1</button>
+                        <button class="bouton-page">2</button>
+                        <button class="bouton-page">3</button>
+                        <span style="padding:0 6px;color:var(--couleur-texte-secondaire)">…</span>
+                        <button class="bouton-page">50</button>
+                        <button class="bouton-page"><i class="bi bi-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer id="pied-page">© 2026 Université Virtuelle de Côte d'Ivoire — Application de gestion des heures des enseignants</footer>
+    </div>
+</div>
+
+<!-- MODAL Déclarer une activité -->
+<div class="superposition-modal" id="modal-activite">
+    <div class="fenetre-modal">
+        <div class="en-tete-modal">
+            <div class="titre-modal"><i class="bi bi-activity"></i><span id="titre-modal-act">Déclarer une activité</span></div>
+            <button class="bouton-fermer-modal" onclick="fermerModal('modal-activite')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="corps-modal">
+            <form id="formulaire-activite" novalidate>
+                <div class="grille-formulaire">
+                    <div class="groupe-champ-modal champ-pleine-largeur">
+                        <label class="etiquette-modal">Enseignant</label>
+                        <select class="saisie-modal" required>
+                            <option value="">Sélectionner un enseignant…</option>
+                            <option>Konan Yao Jean-Paul</option><option>Djeninba Traoré</option>
+                            <option>Gerard Deungo Miangui</option><option>Dah Sébastien</option><option>Ameku Kujoji Kephas</option>
+                        </select>
+                    </div>
+                    <div class="groupe-champ-modal champ-pleine-largeur">
+                        <label class="etiquette-modal">Cours concerné</label>
+                        <select class="saisie-modal" required>
+                            <option value="">Sélectionner un cours…</option>
+                            <option>Programmation Web (L2 — 2 Cr)</option>
+                            <option>Base de données avancées (L3 — 3 Cr)</option>
+                            <option>Algorithmique (L1 — 2 Cr)</option>
+                            <option>Réseaux et protocoles (M1 — 4 Cr)</option>
+                        </select>
+                    </div>
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal">Type d'action</label>
+                        <select class="saisie-modal" id="act-type" onchange="calculerActivite()" required>
+                            <option value="">Sélectionner…</option>
+                            <option value="creation">Création de ressources</option>
+                            <option value="mise-a-jour">Mise à jour de ressources</option>
+                        </select>
+                    </div>
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal">Niveau de contenu</label>
+                        <select class="saisie-modal" id="act-niveau" onchange="calculerActivite()" required>
+                            <option value="">Sélectionner…</option>
+                            <option value="1">Niveau 1 — Contenus simples + quiz</option>
+                            <option value="2">Niveau 2 — Interactif + évaluations</option>
+                            <option value="3">Niveau 3 — Simulations / serious games</option>
+                        </select>
+                    </div>
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal">Nombre de crédits</label>
+                        <select class="saisie-modal" id="act-credits" onchange="calculerActivite()" required>
+                            <option value="">Sélectionner…</option>
+                            <option value="1">1 crédit (40 séquences)</option>
+                            <option value="2">2 crédits (80 séquences)</option>
+                            <option value="3">3 crédits (120 séquences)</option>
+                            <option value="4">4 crédits (160 séquences)</option>
+                        </select>
+                    </div>
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal">Date de réalisation</label>
+                        <input class="saisie-modal" type="date" id="act-date" required>
+                    </div>
+                    <div class="groupe-champ-modal champ-pleine-largeur">
+                        <label class="etiquette-modal">Commentaire (optionnel)</label>
+                        <textarea class="saisie-modal" rows="2" style="resize:vertical" placeholder="Observations sur l'activité…"></textarea>
+                    </div>
+                </div>
+                <!-- Calcul automatique -->
+                <div class="carte-calcul" id="calcul-activite" style="display:none">
+                    <div class="titre-calcul"><i class="bi bi-calculator"></i>Volume horaire calculé automatiquement</div>
+                    <div class="lignes-calcul">
+                        <div class="ligne-calcul"><div class="valeur-calcul" id="calc-seq">—</div><div class="label-calcul">Séquences</div></div>
+                        <div class="ligne-calcul"><div class="valeur-calcul" id="calc-coef">—</div><div class="label-calcul">Coefficient</div></div>
+                        <div class="ligne-calcul"><div class="valeur-calcul" id="calc-total" style="color:var(--couleur-principale)">—</div><div class="label-calcul">Total heures</div></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="pied-modal">
+            <button class="btn btn-contour" onclick="fermerModal('modal-activite')">Annuler</button>
+            <button class="btn btn-principal" onclick="soumettreActivite()"><i class="bi bi-check-lg"></i>Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL Détail activité -->
+<div class="superposition-modal" id="modal-detail-activite">
+    <div class="fenetre-modal">
+        <div class="en-tete-modal">
+            <div class="titre-modal"><i class="bi bi-info-circle"></i><span>Détail de l'activité</span></div>
+            <button class="bouton-fermer-modal" onclick="fermerModal('modal-detail-activite')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="corps-modal">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+                <div style="background:var(--couleur-fond);border-radius:9px;padding:13px 15px">
+                    <div style="font-size:11px;font-weight:600;color:var(--couleur-texte-secondaire);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Enseignant</div>
+                    <div style="font-size:14px;font-weight:600" id="d-enseignant"></div>
+                </div>
+                <div style="background:var(--couleur-fond);border-radius:9px;padding:13px 15px">
+                    <div style="font-size:11px;font-weight:600;color:var(--couleur-texte-secondaire);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Cours</div>
+                    <div style="font-size:14px;font-weight:600" id="d-cours"></div>
+                </div>
+                <div style="background:var(--couleur-fond);border-radius:9px;padding:13px 15px">
+                    <div style="font-size:11px;font-weight:600;color:var(--couleur-texte-secondaire);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Type d'action</div>
+                    <div style="font-size:14px;font-weight:600" id="d-type"></div>
+                </div>
+                <div style="background:var(--couleur-fond);border-radius:9px;padding:13px 15px">
+                    <div style="font-size:11px;font-weight:600;color:var(--couleur-texte-secondaire);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Niveau de contenu</div>
+                    <div style="font-size:14px;font-weight:600" id="d-niveau"></div>
+                </div>
+                <div style="background:linear-gradient(135deg,rgba(67,97,238,0.07),rgba(114,9,183,0.07));border:1px solid rgba(67,97,238,0.15);border-radius:9px;padding:13px 15px;grid-column:1/-1">
+                    <div style="font-size:11px;font-weight:600;color:var(--couleur-principale);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Volume horaire calculé</div>
+                    <div style="font-size:28px;font-weight:700;color:var(--couleur-principale)" id="d-heures"></div>
+                </div>
+            </div>
+            <!-- Timeline du workflow -->
+            <div style="font-size:12px;font-weight:700;color:var(--couleur-texte-secondaire);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.07em">Workflow de validation</div>
+            <div class="timeline-statut" id="timeline-statut"></div>
+        </div>
+        <div class="pied-modal">
+            <button class="btn btn-contour" onclick="fermerModal('modal-detail-activite')">Fermer</button>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/principal.js"></script>
+<script>
+var COEFS = { creation:{'1':0.40,'2':0.75,'3':1.5}, 'mise-a-jour':{'1':0.20,'2':0.375,'3':0.75} };
+function calculerActivite(){
+    var t=document.getElementById('act-type').value, n=document.getElementById('act-niveau').value, c=document.getElementById('act-credits').value;
+    var div=document.getElementById('calcul-activite');
+    if(!t||!n||!c){div.style.display='none';return;}
+    var seq=parseInt(c)*40, coef=COEFS[t][n], total=seq*coef;
+    document.getElementById('calc-seq').textContent=seq;
+    document.getElementById('calc-coef').textContent=coef.toString().replace('.',',');
+    document.getElementById('calc-total').textContent=total.toFixed(1).replace('.',',')+' h';
+    div.style.display='block';
+}
+function ouvrirModal(id){document.getElementById(id).classList.add('ouverte');document.body.style.overflow='hidden';}
+function fermerModal(id){document.getElementById(id).classList.remove('ouverte');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){document.querySelectorAll('.superposition-modal.ouverte').forEach(function(m){m.classList.remove('ouverte')});document.body.style.overflow='';}});
+document.querySelectorAll('.superposition-modal').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)fermerModal(m.id)});});
+document.getElementById('bouton-nouvelle-activite').addEventListener('click',function(){document.getElementById('titre-modal-act').textContent='Déclarer une activité';document.getElementById('formulaire-activite').reset();document.getElementById('calcul-activite').style.display='none';ouvrirModal('modal-activite');});
+function ouvrirModalEdition(nom){document.getElementById('titre-modal-act').textContent='Modifier — '+nom;ouvrirModal('modal-activite');}
+function soumettreActivite(){afficherToast('Activité déclarée. En attente de validation.','succes');fermerModal('modal-activite');}
+function ouvrirDetail(ens,cours,type,niveau,heures,statut){
+    document.getElementById('d-enseignant').textContent=ens;
+    document.getElementById('d-cours').textContent=cours;
+    document.getElementById('d-type').textContent=type;
+    document.getElementById('d-niveau').textContent=niveau;
+    document.getElementById('d-heures').textContent=heures;
+    var etapes=['Saisie','En attente','Validation','Verrouillé'];
+    var actif={'valide':3,'en-attente':1,'rejete':1}[statut]||0;
+    var html='';
+    etapes.forEach(function(e,i){
+        var cls=i<actif?'active':i===actif?'courante':'';
+        var icone=i<actif?'<i class="bi bi-check-lg"></i>':(i+1).toString();
+        html+='<div class="etape-timeline '+cls+'"><div class="cercle-etape">'+icone+'</div><div class="label-etape">'+e+'</div></div>';
+    });
+    document.getElementById('timeline-statut').innerHTML=html;
+    ouvrirModal('modal-detail-activite');
+}
+</script>
+</body>
+</html>

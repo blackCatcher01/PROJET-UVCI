@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ressources pédagogiques — UVCI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .superposition-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;align-items:center;justify-content:center;padding:16px;}
+        .superposition-modal.ouverte{display:flex;}
+        .fenetre-modal{background:var(--couleur-carte);border-radius:var(--rayon-carte);width:100%;max-width:560px;box-shadow:0 24px 60px rgba(0,0,0,0.2);animation:om 0.22s ease;}
+        @keyframes om{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+        .en-tete-modal{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--couleur-bordure);}
+        .titre-modal{font-size:16px;font-weight:700;color:var(--couleur-texte-principal);display:flex;align-items:center;gap:8px;}
+        .titre-modal i{color:var(--couleur-principale);font-size:19px;}
+        .bouton-fermer-modal{width:32px;height:32px;border:none;background:var(--couleur-fond);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--couleur-texte-secondaire);transition:var(--transition);}
+        .bouton-fermer-modal:hover{background:var(--couleur-danger);color:#fff;}
+        .corps-modal{padding:24px;}
+        .pied-modal{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid var(--couleur-bordure);background:var(--couleur-fond);border-radius:0 0 var(--rayon-carte) var(--rayon-carte);}
+        .grille-formulaire{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+        .grille-formulaire .champ-pleine-largeur{grid-column:1/-1;}
+        .groupe-champ-modal{display:flex;flex-direction:column;gap:5px;}
+        .etiquette-modal{font-size:12.5px;font-weight:600;color:var(--couleur-texte-principal);}
+        .saisie-modal{padding:9px 12px;border:1.5px solid var(--couleur-bordure);border-radius:var(--rayon-element);font-size:13.5px;font-family:var(--police);color:var(--couleur-texte-principal);background:#F8FAFF;outline:none;transition:var(--transition);width:100%;}
+        .saisie-modal:focus{border-color:var(--couleur-principale);background:#fff;box-shadow:0 0 0 3px rgba(67,97,238,0.1);}
+        select.saisie-modal{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B94B2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;cursor:pointer;}
+        .icone-type-ressource{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+        .type-pdf{background:#FDEEF0;color:#E63950;}
+        .type-video{background:#EAF0FE;color:#4361EE;}
+        .type-quiz{background:#FEF5E0;color:#D4910A;}
+        .type-interactif{background:#E7FBF3;color:#05C48A;}
+        .type-evaluation{background:#F2EAFE;color:#6B21A8;}
+        .grille-ressources{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:22px;}
+        .carte-ressource{border:1px solid var(--couleur-bordure);border-radius:12px;padding:16px;transition:var(--transition);cursor:pointer;}
+        .carte-ressource:hover{border-color:var(--couleur-principale);box-shadow:0 4px 14px rgba(67,97,238,0.1);}
+        .entete-ressource{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+        .info-ressource{flex:1;}
+        .titre-ressource{font-size:13.5px;font-weight:600;color:var(--couleur-texte-principal);margin-bottom:2px;}
+        .sous-titre-ressource{font-size:12px;color:var(--couleur-texte-secondaire);}
+        .meta-ressource{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+    </style>
+</head>
+<body>
+<div id="superposition-mobile"></div>
+<div id="enveloppe">
+
+    <aside id="barre-laterale">
+        <div class="logo-barre"><div class="logo-icone"><i class="bi bi-mortarboard-fill"></i></div><div><div class="logo-nom">UVCI</div><div class="logo-sous-titre">Heures Enseignants</div></div></div>
+        <nav class="navigation-barre">
+            <div class="groupe-navigation"><a href="tableau-de-bord.html" class="lien-navigation"><i class="bi bi-grid-1x2"></i>Tableau de bord</a></div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Gestion</div>
+                <a href="enseignants.html" class="lien-navigation"><i class="bi bi-people"></i>Enseignants</a>
+                <a href="cours.html" class="lien-navigation"><i class="bi bi-book"></i>Cours</a>
+                <a href="sequences.html" class="lien-navigation"><i class="bi bi-collection"></i>Séquences pédagogiques</a>
+                <a href="ressources.html" class="lien-navigation actif"><i class="bi bi-file-earmark-richtext"></i>Ressources pédagogiques</a>
+            </div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Suivi</div>
+                <a href="activites.html" class="lien-navigation"><i class="bi bi-activity"></i>Activités pédagogiques</a>
+                <a href="calcul-heures.html" class="lien-navigation"><i class="bi bi-calculator"></i>Calcul des heures</a>
+                <a href="validations.html" class="lien-navigation"><i class="bi bi-check2-circle"></i>Validations<span class="badge-nav">5</span></a>
+            </div>
+            <div class="groupe-navigation"><div class="titre-groupe">Rapports</div><a href="etats-recapitulatifs.html" class="lien-navigation"><i class="bi bi-file-earmark-bar-graph"></i>États récapitulatifs</a></div>
+            <div class="groupe-navigation"><div class="titre-groupe">Système</div><a href="parametres.html" class="lien-navigation"><i class="bi bi-gear"></i>Paramètres</a></div>
+        </nav>
+        <div class="profil-barre"><div class="avatar-profil">AK</div><div class="info-profil"><div class="nom-profil">Admin UVCI</div><div class="role-profil">Administrateur</div></div><button class="bouton-deconnexion" onclick="window.location.href='connexion.html'"><i class="bi bi-box-arrow-right"></i></button></div>
+    </aside>
+
+    <div id="contenu-principal">
+        <header id="barre-navigation">
+            <div class="navigation-gauche">
+                <button class="bouton-basculer" id="bouton-basculer"><i class="bi bi-list"></i></button>
+                <nav class="fil-ariane"><span>UVCI</span><span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span><span>Gestion</span><span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span><span>Ressources pédagogiques</span></nav>
+            </div>
+            <div class="navigation-droite">
+                <button class="bouton-icone-nav"><i class="bi bi-bell"></i><span class="pastille-notif"></span></button>
+                <div class="separateur-nav"></div>
+                <div class="mini-profil-nav"><div class="mini-avatar-nav">AK</div><span class="mini-nom-nav">Admin UVCI</span></div>
+            </div>
+        </header>
+
+        <main id="zone-contenu">
+            <div class="en-tete-page">
+                <div class="groupe-titre">
+                    <h1 class="titre-page">Ressources pédagogiques</h1>
+                    <p class="sous-titre-page">Métadonnées des contenus — les fichiers restent hébergés sur Moodle</p>
+                </div>
+                <div class="actions-page">
+                    <button class="btn btn-contour"><i class="bi bi-download"></i>Exporter</button>
+                    <button class="btn btn-principal" id="bouton-nouvelle-ressource"><i class="bi bi-plus-lg"></i>Ajouter une ressource</button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="grille-statistiques" style="margin-bottom:20px">
+                <div class="carte-statistique" style="padding:16px 18px"><div class="etiquette-stat">Total ressources</div><div class="valeur-stat" style="font-size:26px">1 248</div><div class="evolution-stat">Toutes séquences</div><i class="bi bi-files icone-fond-stat"></i></div>
+                <div class="carte-statistique accent-danger" style="padding:16px 18px"><div class="etiquette-stat">Documents PDF</div><div class="valeur-stat" style="font-size:26px">432</div><div class="evolution-stat">35%</div><i class="bi bi-file-earmark-pdf icone-fond-stat"></i></div>
+                <div class="carte-statistique accent-info" style="padding:16px 18px"><div class="etiquette-stat">Vidéos</div><div class="valeur-stat" style="font-size:26px">286</div><div class="evolution-stat">23%</div><i class="bi bi-camera-video icone-fond-stat"></i></div>
+                <div class="carte-statistique accent-avertissement" style="padding:16px 18px"><div class="etiquette-stat">Quiz & évaluations</div><div class="valeur-stat" style="font-size:26px">530</div><div class="evolution-stat">42%</div><i class="bi bi-question-circle icone-fond-stat"></i></div>
+            </div>
+
+            <!-- Filtre + vue -->
+            <div class="carte" style="margin-bottom:20px">
+                <div class="corps-carte" style="padding:14px 22px">
+                    <div class="barre-outils">
+                        <div class="champ-recherche" style="flex:1;min-width:200px"><i class="bi bi-search"></i><input type="text" id="champ-recherche-tableau" placeholder="Rechercher une ressource…"></div>
+                        <select class="selecteur-filtre" id="filtre-cours-res"><option value="">Tous les cours</option><option>Programmation Web (L2)</option><option>Base de données avancées (L3)</option><option>Algorithmique (L1)</option></select>
+                        <select class="selecteur-filtre" id="filtre-type-res"><option value="">Tous les types</option><option value="PDF">Document PDF</option><option value="Vidéo">Vidéo pédagogique</option><option value="Quiz">Quiz</option><option value="Interactif">Activité interactive</option><option value="Évaluation">Évaluation</option></select>
+                        <div style="display:flex;gap:5px">
+                            <button class="btn-icone" id="btn-vue-grille" onclick="basculerVue('grille')" title="Vue grille"><i class="bi bi-grid-3x3-gap"></i></button>
+                            <button class="btn-icone" id="btn-vue-liste" onclick="basculerVue('liste')" title="Vue liste"><i class="bi bi-list-ul"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vue grille -->
+            <div id="vue-grille" class="carte">
+                <div class="grille-ressources">
+                    <div class="carte-ressource">
+                        <div class="entete-ressource"><div class="icone-type-ressource type-pdf"><i class="bi bi-file-earmark-pdf"></i></div><div class="info-ressource"><div class="titre-ressource">Introduction au développement web</div><div class="sous-titre-ressource">Séquence 01 — Prog. Web L2</div></div></div>
+                        <div class="meta-ressource"><span class="badge badge-danger">PDF</span><span class="badge badge-neutre">Moodle ✓</span><span class="badge badge-info">Konan Yao</span></div>
+                    </div>
+                    <div class="carte-ressource">
+                        <div class="entete-ressource"><div class="icone-type-ressource type-video"><i class="bi bi-camera-video"></i></div><div class="info-ressource"><div class="titre-ressource">Architecture client-serveur — Cours vidéo</div><div class="sous-titre-ressource">Séquence 02 — Prog. Web L2</div></div></div>
+                        <div class="meta-ressource"><span class="badge badge-info">Vidéo</span><span class="badge badge-neutre">Moodle ✓</span></div>
+                    </div>
+                    <div class="carte-ressource">
+                        <div class="entete-ressource"><div class="icone-type-ressource type-quiz"><i class="bi bi-question-circle"></i></div><div class="info-ressource"><div class="titre-ressource">Quiz — Bases du HTML5</div><div class="sous-titre-ressource">Séquence 03 — Prog. Web L2</div></div></div>
+                        <div class="meta-ressource"><span class="badge badge-avertissement">Quiz</span><span class="badge badge-succes">15 questions</span></div>
+                    </div>
+                    <div class="carte-ressource">
+                        <div class="entete-ressource"><div class="icone-type-ressource type-interactif"><i class="bi bi-lightning"></i></div><div class="info-ressource"><div class="titre-ressource">TP interactif — CSS Flexbox</div><div class="sous-titre-ressource">Séquence 04 — Prog. Web L2</div></div></div>
+                        <div class="meta-ressource"><span class="badge badge-succes">Interactif</span><span class="badge badge-neutre">Moodle ✓</span></div>
+                    </div>
+                    <div class="carte-ressource">
+                        <div class="entete-ressource"><div class="icone-type-ressource type-evaluation"><i class="bi bi-clipboard-check"></i></div><div class="info-ressource"><div class="titre-ressource">Évaluation formative — Séquence 5</div><div class="sous-titre-ressource">Séquence 05 — BDD L3</div></div></div>
+                        <div class="meta-ressource"><span class="badge badge-violet">Évaluation</span><span class="badge badge-succes">Corrigé inclus</span></div>
+                    </div>
+                    <div class="carte-ressource">
+                        <div class="entete-ressource"><div class="icone-type-ressource type-pdf"><i class="bi bi-file-earmark-pdf"></i></div><div class="info-ressource"><div class="titre-ressource">Modèles relationnels — Support de cours</div><div class="sous-titre-ressource">Séquence 06 — BDD L3</div></div></div>
+                        <div class="meta-ressource"><span class="badge badge-danger">PDF</span><span class="badge badge-neutre">48 pages</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vue liste (cachée par défaut) -->
+            <div id="vue-liste" style="display:none">
+                <div class="carte">
+                    <div class="conteneur-tableau">
+                        <table class="tableau-donnees" id="tableau-principal">
+                            <thead><tr><th>Titre</th><th>Type</th><th class="colonne-masquable">Séquence</th><th class="colonne-masquable">Cours</th><th>URL Moodle</th><th style="text-align:right">Actions</th></tr></thead>
+                            <tbody>
+                                <tr><td><div style="font-weight:600">Introduction au développement web</div></td><td><span class="badge badge-danger"><i class="bi bi-file-earmark-pdf"></i> PDF</span></td><td class="colonne-masquable">Séq. 01</td><td class="colonne-masquable texte-secondaire-tableau">Prog. Web L2</td><td><a href="#" style="font-size:12px;color:var(--couleur-principale)">moodle.uvci.edu.ci/…</a></td><td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="afficherToast('Ouverture de la ressource sur Moodle.','info')"><i class="bi bi-box-arrow-up-right"></i></button><button class="btn-icone danger" onclick="confirmerSuppression('Supprimer cette ressource ?',function(){afficherToast('Ressource supprimée.','succes')})"><i class="bi bi-trash3"></i></button></div></td></tr>
+                                <tr><td><div style="font-weight:600">Architecture client-serveur — Vidéo</div></td><td><span class="badge badge-info"><i class="bi bi-camera-video"></i> Vidéo</span></td><td class="colonne-masquable">Séq. 02</td><td class="colonne-masquable texte-secondaire-tableau">Prog. Web L2</td><td><a href="#" style="font-size:12px;color:var(--couleur-principale)">moodle.uvci.edu.ci/…</a></td><td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="afficherToast('Ouverture sur Moodle.','info')"><i class="bi bi-box-arrow-up-right"></i></button><button class="btn-icone danger" onclick="confirmerSuppression('Supprimer ?',function(){afficherToast('Supprimée.','succes')})"><i class="bi bi-trash3"></i></button></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer id="pied-page">© 2026 Université Virtuelle de Côte d'Ivoire — Application de gestion des heures des enseignants</footer>
+    </div>
+</div>
+
+<!-- MODAL Ajouter ressource -->
+<div class="superposition-modal" id="modal-ressource">
+    <div class="fenetre-modal">
+        <div class="en-tete-modal"><div class="titre-modal"><i class="bi bi-file-earmark-plus"></i><span>Ajouter une ressource</span></div><button class="bouton-fermer-modal" onclick="fermerModal('modal-ressource')"><i class="bi bi-x-lg"></i></button></div>
+        <div class="corps-modal">
+            <div style="background:#E6F7FE;border-radius:9px;padding:10px 14px;margin-bottom:16px;font-size:12.5px;color:#1E87CC;display:flex;gap:8px">
+                <i class="bi bi-info-circle" style="flex-shrink:0"></i>
+                <span>L'application enregistre uniquement les métadonnées. Le fichier doit rester hébergé sur Moodle.</span>
+            </div>
+            <div class="grille-formulaire">
+                <div class="groupe-champ-modal champ-pleine-largeur"><label class="etiquette-modal">Titre de la ressource</label><input class="saisie-modal" type="text" placeholder="Ex. : Support de cours — HTML5" required></div>
+                <div class="groupe-champ-modal"><label class="etiquette-modal">Type de ressource</label>
+                    <select class="saisie-modal" required><option value="">Sélectionner…</option><option>Document PDF</option><option>Vidéo pédagogique</option><option>Quiz</option><option>Activité interactive</option><option>Évaluation</option></select>
+                </div>
+                <div class="groupe-champ-modal"><label class="etiquette-modal">Cours associé</label>
+                    <select class="saisie-modal" required><option value="">Sélectionner…</option><option>Programmation Web (L2)</option><option>BDD Avancées (L3)</option><option>Algorithmique (L1)</option></select>
+                </div>
+                <div class="groupe-champ-modal champ-pleine-largeur"><label class="etiquette-modal">Séquence associée</label>
+                    <select class="saisie-modal"><option value="">Sélectionner une séquence…</option><option>Séquence 01 — Introduction</option><option>Séquence 02 — Architecture</option><option>Séquence 03 — HTML5</option></select>
+                </div>
+                <div class="groupe-champ-modal champ-pleine-largeur"><label class="etiquette-modal">URL Moodle</label><input class="saisie-modal" type="url" placeholder="https://moodle.uvci.edu.ci/…"></div>
+            </div>
+        </div>
+        <div class="pied-modal"><button class="btn btn-contour" onclick="fermerModal('modal-ressource')">Annuler</button><button class="btn btn-principal" onclick="afficherToast('Ressource enregistrée.','succes');fermerModal('modal-ressource')"><i class="bi bi-check-lg"></i>Enregistrer</button></div>
+    </div>
+</div>
+
+<script src="assets/js/principal.js"></script>
+<script>
+function ouvrirModal(id){document.getElementById(id).classList.add('ouverte');document.body.style.overflow='hidden';}
+function fermerModal(id){document.getElementById(id).classList.remove('ouverte');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){document.querySelectorAll('.superposition-modal.ouverte').forEach(function(m){m.classList.remove('ouverte')});document.body.style.overflow='';}});
+document.querySelectorAll('.superposition-modal').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)fermerModal(m.id)});});
+document.getElementById('bouton-nouvelle-ressource').addEventListener('click',function(){ouvrirModal('modal-ressource');});
+function basculerVue(v){
+    document.getElementById('vue-grille').style.display=v==='grille'?'block':'none';
+    document.getElementById('vue-liste').style.display=v==='liste'?'block':'none';
+}
+</script>
+</body>
+</html>

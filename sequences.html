@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Séquences pédagogiques — UVCI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .superposition-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:500; align-items:center; justify-content:center; padding:16px; }
+        .superposition-modal.ouverte { display:flex; }
+        .fenetre-modal { background:var(--couleur-carte); border-radius:var(--rayon-carte); width:100%; max-width:540px; box-shadow:0 24px 60px rgba(0,0,0,0.2); animation:ouverture-modal 0.22s ease; }
+        @keyframes ouverture-modal { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
+        .en-tete-modal { display:flex; align-items:center; justify-content:space-between; padding:20px 24px; border-bottom:1px solid var(--couleur-bordure); }
+        .titre-modal { font-size:16px; font-weight:700; color:var(--couleur-texte-principal); display:flex; align-items:center; gap:8px; }
+        .titre-modal i { color:var(--couleur-principale); font-size:19px; }
+        .bouton-fermer-modal { width:32px; height:32px; border:none; background:var(--couleur-fond); border-radius:7px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--couleur-texte-secondaire); transition:var(--transition); }
+        .bouton-fermer-modal:hover { background:var(--couleur-danger); color:#fff; }
+        .corps-modal { padding:24px; }
+        .pied-modal { display:flex; align-items:center; justify-content:flex-end; gap:10px; padding:16px 24px; border-top:1px solid var(--couleur-bordure); background:var(--couleur-fond); border-radius:0 0 var(--rayon-carte) var(--rayon-carte); }
+        .grille-formulaire { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        .grille-formulaire .champ-pleine-largeur { grid-column:1/-1; }
+        .groupe-champ-modal { display:flex; flex-direction:column; gap:5px; }
+        .etiquette-modal { font-size:12.5px; font-weight:600; color:var(--couleur-texte-principal); }
+        .saisie-modal { padding:9px 12px; border:1.5px solid var(--couleur-bordure); border-radius:var(--rayon-element); font-size:13.5px; font-family:var(--police); color:var(--couleur-texte-principal); background:#F8FAFF; outline:none; transition:var(--transition); width:100%; }
+        .saisie-modal:focus { border-color:var(--couleur-principale); background:#fff; box-shadow:0 0 0 3px rgba(67,97,238,0.1); }
+        select.saisie-modal { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B94B2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; padding-right:30px; cursor:pointer; }
+        .barre-progression { height:8px; background:var(--couleur-bordure); border-radius:4px; overflow:hidden; margin-top:6px; }
+        .barre-progression-remplie { height:100%; background:var(--couleur-principale); border-radius:4px; transition:width 0.3s; }
+        .info-progression { display:flex; justify-content:space-between; font-size:11.5px; color:var(--couleur-texte-secondaire); margin-bottom:5px; }
+        .etiquette-credit { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; background:rgba(67,97,238,0.1); color:var(--couleur-principale); padding:3px 9px; border-radius:12px; }
+    </style>
+</head>
+<body>
+<div id="superposition-mobile"></div>
+<div id="enveloppe">
+
+    <aside id="barre-laterale">
+        <div class="logo-barre">
+            <div class="logo-icone"><i class="bi bi-mortarboard-fill"></i></div>
+            <div><div class="logo-nom">UVCI</div><div class="logo-sous-titre">Heures Enseignants</div></div>
+        </div>
+        <nav class="navigation-barre">
+            <div class="groupe-navigation">
+                <a href="tableau-de-bord.html" class="lien-navigation"><i class="bi bi-grid-1x2"></i>Tableau de bord</a>
+            </div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Gestion</div>
+                <a href="enseignants.html" class="lien-navigation"><i class="bi bi-people"></i>Enseignants</a>
+                <a href="cours.html" class="lien-navigation"><i class="bi bi-book"></i>Cours</a>
+                <a href="sequences.html" class="lien-navigation actif"><i class="bi bi-collection"></i>Séquences pédagogiques</a>
+                <a href="ressources.html" class="lien-navigation"><i class="bi bi-file-earmark-richtext"></i>Ressources pédagogiques</a>
+            </div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Suivi</div>
+                <a href="activites.html" class="lien-navigation"><i class="bi bi-activity"></i>Activités pédagogiques</a>
+                <a href="calcul-heures.html" class="lien-navigation"><i class="bi bi-calculator"></i>Calcul des heures</a>
+                <a href="validations.html" class="lien-navigation"><i class="bi bi-check2-circle"></i>Validations<span class="badge-nav">5</span></a>
+            </div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Rapports</div>
+                <a href="etats-recapitulatifs.html" class="lien-navigation"><i class="bi bi-file-earmark-bar-graph"></i>États récapitulatifs</a>
+            </div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Système</div>
+                <a href="parametres.html" class="lien-navigation"><i class="bi bi-gear"></i>Paramètres</a>
+            </div>
+        </nav>
+        <div class="profil-barre">
+            <div class="avatar-profil">AK</div>
+            <div class="info-profil"><div class="nom-profil">Admin UVCI</div><div class="role-profil">Administrateur</div></div>
+            <button class="bouton-deconnexion" onclick="window.location.href='connexion.html'"><i class="bi bi-box-arrow-right"></i></button>
+        </div>
+    </aside>
+
+    <div id="contenu-principal">
+        <header id="barre-navigation">
+            <div class="navigation-gauche">
+                <button class="bouton-basculer" id="bouton-basculer"><i class="bi bi-list"></i></button>
+                <nav class="fil-ariane">
+                    <span>UVCI</span><span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span>
+                    <span>Gestion</span><span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span>
+                    <span>Séquences pédagogiques</span>
+                </nav>
+            </div>
+            <div class="navigation-droite">
+                <button class="bouton-icone-nav"><i class="bi bi-bell"></i><span class="pastille-notif"></span></button>
+                <div class="separateur-nav"></div>
+                <div class="mini-profil-nav">
+                    <div class="mini-avatar-nav">AK</div>
+                    <span class="mini-nom-nav">Admin UVCI</span>
+                    <i class="bi bi-chevron-down" style="font-size:12px;color:var(--couleur-texte-secondaire)"></i>
+                </div>
+            </div>
+        </header>
+
+        <main id="zone-contenu">
+            <div class="en-tete-page">
+                <div class="groupe-titre">
+                    <h1 class="titre-page">Séquences pédagogiques</h1>
+                    <p class="sous-titre-page">Découpage des cours en séquences — 40 séquences = 1 crédit</p>
+                </div>
+                <div class="actions-page">
+                    <button class="btn btn-contour"><i class="bi bi-download"></i>Exporter</button>
+                    <button class="btn btn-principal" id="bouton-nouvelle-sequence"><i class="bi bi-plus-lg"></i>Ajouter une séquence</button>
+                </div>
+            </div>
+
+            <!-- Filtre par cours -->
+            <div class="carte" style="margin-bottom:20px">
+                <div class="corps-carte">
+                    <div class="barre-outils" style="flex-wrap:wrap;gap:12px">
+                        <div style="display:flex;align-items:center;gap:8px;flex:1">
+                            <label style="font-size:13px;font-weight:600;color:var(--couleur-texte-secondaire);white-space:nowrap">Cours sélectionné :</label>
+                            <select class="selecteur-filtre" id="filtre-cours-sequence" style="flex:1;max-width:360px">
+                                <option value="">— Tous les cours —</option>
+                                <option value="prog-web" selected>Programmation Web (L2 — 2 crédits)</option>
+                                <option value="bdd">Base de données avancées (L3 — 3 crédits)</option>
+                                <option value="algo">Algorithmique (L1 — 2 crédits)</option>
+                                <option value="reseaux">Réseaux et protocoles (M1 — 4 crédits)</option>
+                            </select>
+                        </div>
+                        <div class="champ-recherche" style="min-width:200px">
+                            <i class="bi bi-search"></i>
+                            <input type="text" id="champ-recherche-tableau" placeholder="Rechercher une séquence…">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Carte de progression du cours sélectionné -->
+            <div class="grille-deux-colonnes" style="margin-bottom:20px">
+                <div class="carte">
+                    <div class="corps-carte">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+                            <div>
+                                <div style="font-size:15px;font-weight:700;color:var(--couleur-texte-principal)">Programmation Web</div>
+                                <div style="font-size:12.5px;color:var(--couleur-texte-secondaire);margin-top:3px">L2 · Semestre 2 · Konan Yao Jean-Paul</div>
+                            </div>
+                            <span class="badge badge-succes"><i class="bi bi-check-lg"></i> Validé</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px">
+                            <div style="text-align:center;background:var(--couleur-fond);border-radius:9px;padding:12px">
+                                <div style="font-size:22px;font-weight:700;color:var(--couleur-principale)">80</div>
+                                <div style="font-size:11px;color:var(--couleur-texte-secondaire)">Séquences totales</div>
+                            </div>
+                            <div style="text-align:center;background:var(--couleur-fond);border-radius:9px;padding:12px">
+                                <div style="font-size:22px;font-weight:700;color:var(--couleur-succes)">68</div>
+                                <div style="font-size:11px;color:var(--couleur-texte-secondaire)">Créées</div>
+                            </div>
+                            <div style="text-align:center;background:var(--couleur-fond);border-radius:9px;padding:12px">
+                                <div style="font-size:22px;font-weight:700;color:var(--couleur-avertissement)">12</div>
+                                <div style="font-size:11px;color:var(--couleur-texte-secondaire)">Restantes</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="info-progression">
+                                <span>Progression de création</span>
+                                <span style="font-weight:700">68 / 80 séquences</span>
+                            </div>
+                            <div class="barre-progression">
+                                <div class="barre-progression-remplie" style="width:85%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carte">
+                    <div class="corps-carte">
+                        <div style="font-size:13px;font-weight:700;color:var(--couleur-texte-principal);margin-bottom:14px">Répartition par module</div>
+                        <div style="display:flex;flex-direction:column;gap:11px">
+                            <div>
+                                <div class="info-progression"><span>Module 1 — Introduction</span><span>20 / 20</span></div>
+                                <div class="barre-progression"><div class="barre-progression-remplie" style="width:100%;background:var(--couleur-succes)"></div></div>
+                            </div>
+                            <div>
+                                <div class="info-progression"><span>Module 2 — HTML & CSS</span><span>20 / 20</span></div>
+                                <div class="barre-progression"><div class="barre-progression-remplie" style="width:100%;background:var(--couleur-succes)"></div></div>
+                            </div>
+                            <div>
+                                <div class="info-progression"><span>Module 3 — JavaScript</span><span>18 / 20</span></div>
+                                <div class="barre-progression"><div class="barre-progression-remplie" style="width:90%;background:var(--couleur-avertissement)"></div></div>
+                            </div>
+                            <div>
+                                <div class="info-progression"><span>Module 4 — Framework</span><span>10 / 20</span></div>
+                                <div class="barre-progression"><div class="barre-progression-remplie" style="width:50%;background:var(--couleur-danger)"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tableau des séquences -->
+            <div class="carte">
+                <div class="en-tete-carte">
+                    <div class="titre-carte"><i class="bi bi-list-ol"></i>Liste des séquences</div>
+                    <div class="barre-outils">
+                        <select class="selecteur-filtre" id="filtre-module">
+                            <option value="">Tous les modules</option>
+                            <option value="Module 1">Module 1</option>
+                            <option value="Module 2">Module 2</option>
+                            <option value="Module 3">Module 3</option>
+                            <option value="Module 4">Module 4</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="conteneur-tableau">
+                    <table class="tableau-donnees" id="tableau-principal">
+                        <thead>
+                            <tr>
+                                <th style="width:60px">N°</th>
+                                <th data-tri="titre">Titre de la séquence</th>
+                                <th data-tri="module" class="colonne-masquable">Module</th>
+                                <th data-tri="credit" class="colonne-masquable">Crédit associé</th>
+                                <th data-tri="ressources">Ressources</th>
+                                <th style="text-align:right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight:700;color:var(--couleur-principale)">01</td>
+                                <td><div style="font-weight:600">Introduction au développement web</div><div class="detail-cellule">Présentation générale des technologies web</div></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Module 1</td>
+                                <td class="colonne-masquable"><span class="etiquette-credit"><i class="bi bi-star-fill"></i> Crédit 1</span></td>
+                                <td><span class="badge badge-succes"><i class="bi bi-file-earmark-check"></i> 3 ressources</span></td>
+                                <td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" title="Modifier" onclick="ouvrirModalEdition('Introduction au développement web')"><i class="bi bi-pencil"></i></button><button class="btn-icone danger" title="Supprimer" onclick="confirmerSuppression('Supprimer cette séquence ?',function(){afficherToast('Séquence supprimée.','succes')})"><i class="bi bi-trash3"></i></button></div></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:700;color:var(--couleur-principale)">02</td>
+                                <td><div style="font-weight:600">Architecture client-serveur</div><div class="detail-cellule">Fonctionnement du protocole HTTP</div></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Module 1</td>
+                                <td class="colonne-masquable"><span class="etiquette-credit"><i class="bi bi-star-fill"></i> Crédit 1</span></td>
+                                <td><span class="badge badge-succes"><i class="bi bi-file-earmark-check"></i> 2 ressources</span></td>
+                                <td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="ouvrirModalEdition('Architecture client-serveur')"><i class="bi bi-pencil"></i></button><button class="btn-icone danger" onclick="confirmerSuppression('Supprimer ?',function(){afficherToast('Supprimée.','succes')})"><i class="bi bi-trash3"></i></button></div></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:700;color:var(--couleur-principale)">03</td>
+                                <td><div style="font-weight:600">Bases du HTML5</div><div class="detail-cellule">Structure et sémantique des pages web</div></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Module 2</td>
+                                <td class="colonne-masquable"><span class="etiquette-credit"><i class="bi bi-star-fill"></i> Crédit 1</span></td>
+                                <td><span class="badge badge-succes"><i class="bi bi-file-earmark-check"></i> 4 ressources</span></td>
+                                <td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="ouvrirModalEdition('Bases du HTML5')"><i class="bi bi-pencil"></i></button><button class="btn-icone danger" onclick="confirmerSuppression('Supprimer ?',function(){afficherToast('Supprimée.','succes')})"><i class="bi bi-trash3"></i></button></div></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:700;color:var(--couleur-principale)">04</td>
+                                <td><div style="font-weight:600">Mise en forme avec CSS3</div><div class="detail-cellule">Sélecteurs, propriétés et mise en page flexbox</div></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Module 2</td>
+                                <td class="colonne-masquable"><span class="etiquette-credit"><i class="bi bi-star-fill"></i> Crédit 1</span></td>
+                                <td><span class="badge badge-avertissement"><i class="bi bi-exclamation-circle"></i> 1 ressource</span></td>
+                                <td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="ouvrirModalEdition('Mise en forme avec CSS3')"><i class="bi bi-pencil"></i></button><button class="btn-icone danger" onclick="confirmerSuppression('Supprimer ?',function(){afficherToast('Supprimée.','succes')})"><i class="bi bi-trash3"></i></button></div></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:700;color:var(--couleur-principale)">05</td>
+                                <td><div style="font-weight:600">JavaScript fondamentaux</div><div class="detail-cellule">Variables, fonctions, événements</div></td>
+                                <td class="texte-secondaire-tableau colonne-masquable">Module 3</td>
+                                <td class="colonne-masquable"><span class="etiquette-credit"><i class="bi bi-star-half"></i> Crédit 2</span></td>
+                                <td><span class="badge badge-neutre"><i class="bi bi-plus-circle"></i> À compléter</span></td>
+                                <td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="ouvrirModalEdition('JavaScript fondamentaux')"><i class="bi bi-pencil"></i></button><button class="btn-icone danger" onclick="confirmerSuppression('Supprimer ?',function(){afficherToast('Supprimée.','succes')})"><i class="bi bi-trash3"></i></button></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="conteneur-pagination">
+                    <span>Affichage de <strong>5</strong> sur <strong>68</strong> séquences</span>
+                    <div class="pagination">
+                        <button class="bouton-page"><i class="bi bi-chevron-left"></i></button>
+                        <button class="bouton-page actif">1</button>
+                        <button class="bouton-page">2</button>
+                        <button class="bouton-page">3</button>
+                        <span style="padding:0 6px;color:var(--couleur-texte-secondaire)">…</span>
+                        <button class="bouton-page">14</button>
+                        <button class="bouton-page"><i class="bi bi-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer id="pied-page">© 2026 Université Virtuelle de Côte d'Ivoire — Application de gestion des heures des enseignants</footer>
+    </div>
+</div>
+
+<!-- MODAL Ajouter / Modifier -->
+<div class="superposition-modal" id="modal-sequence">
+    <div class="fenetre-modal">
+        <div class="en-tete-modal">
+            <div class="titre-modal"><i class="bi bi-list-ol"></i><span id="titre-modal-seq">Ajouter une séquence</span></div>
+            <button class="bouton-fermer-modal" onclick="fermerModal('modal-sequence')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="corps-modal">
+            <form id="formulaire-sequence" novalidate>
+                <div class="grille-formulaire">
+                    <div class="groupe-champ-modal champ-pleine-largeur">
+                        <label class="etiquette-modal" for="seq-cours">Cours</label>
+                        <select class="saisie-modal" id="seq-cours" required>
+                            <option value="">Sélectionner un cours…</option>
+                            <option selected>Programmation Web (L2)</option>
+                            <option>Base de données avancées (L3)</option>
+                            <option>Algorithmique (L1)</option>
+                        </select>
+                    </div>
+                    <div class="groupe-champ-modal champ-pleine-largeur">
+                        <label class="etiquette-modal" for="seq-titre">Titre de la séquence</label>
+                        <input class="saisie-modal" type="text" id="seq-titre" placeholder="Ex. : Introduction au développement web" required>
+                    </div>
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal" for="seq-numero">Numéro d'ordre</label>
+                        <input class="saisie-modal" type="number" id="seq-numero" placeholder="Ex. : 1" min="1" required>
+                    </div>
+                    <div class="groupe-champ-modal">
+                        <label class="etiquette-modal" for="seq-module">Module</label>
+                        <select class="saisie-modal" id="seq-module">
+                            <option value="">Sélectionner…</option>
+                            <option>Module 1</option><option>Module 2</option>
+                            <option>Module 3</option><option>Module 4</option>
+                        </select>
+                    </div>
+                    <div class="groupe-champ-modal champ-pleine-largeur">
+                        <label class="etiquette-modal" for="seq-description">Description (optionnelle)</label>
+                        <textarea class="saisie-modal" id="seq-description" rows="3" placeholder="Objectifs pédagogiques de la séquence…" style="resize:vertical"></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="pied-modal">
+            <button class="btn btn-contour" onclick="fermerModal('modal-sequence')">Annuler</button>
+            <button class="btn btn-principal" onclick="soumettreSequence()"><i class="bi bi-check-lg"></i>Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/principal.js"></script>
+<script>
+function ouvrirModal(id){document.getElementById(id).classList.add('ouverte');document.body.style.overflow='hidden';}
+function fermerModal(id){document.getElementById(id).classList.remove('ouverte');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){document.querySelectorAll('.superposition-modal.ouverte').forEach(function(m){m.classList.remove('ouverte')});document.body.style.overflow='';}});
+document.querySelectorAll('.superposition-modal').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)fermerModal(m.id)});});
+document.getElementById('bouton-nouvelle-sequence').addEventListener('click',function(){document.getElementById('titre-modal-seq').textContent='Ajouter une séquence';document.getElementById('formulaire-sequence').reset();ouvrirModal('modal-sequence');});
+function ouvrirModalEdition(titre){document.getElementById('titre-modal-seq').textContent='Modifier — '+titre;document.getElementById('seq-titre').value=titre;ouvrirModal('modal-sequence');}
+function soumettreSequence(){var titre=document.getElementById('seq-titre').value.trim();if(!titre){afficherToast('Le titre est obligatoire.','avertissement');return;}afficherToast('Séquence enregistrée.','succes');fermerModal('modal-sequence');}
+</script>
+</body>
+</html>

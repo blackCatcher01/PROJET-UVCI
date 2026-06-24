@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validations — UVCI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .superposition-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;align-items:center;justify-content:center;padding:16px;}
+        .superposition-modal.ouverte{display:flex;}
+        .fenetre-modal{background:var(--couleur-carte);border-radius:var(--rayon-carte);width:100%;max-width:520px;box-shadow:0 24px 60px rgba(0,0,0,0.2);animation:om 0.22s ease;}
+        @keyframes om{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+        .en-tete-modal{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--couleur-bordure);}
+        .titre-modal{font-size:16px;font-weight:700;color:var(--couleur-texte-principal);display:flex;align-items:center;gap:8px;}
+        .titre-modal i{font-size:19px;}
+        .bouton-fermer-modal{width:32px;height:32px;border:none;background:var(--couleur-fond);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--couleur-texte-secondaire);transition:var(--transition);}
+        .bouton-fermer-modal:hover{background:var(--couleur-danger);color:#fff;}
+        .corps-modal{padding:24px;}
+        .pied-modal{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid var(--couleur-bordure);background:var(--couleur-fond);border-radius:0 0 var(--rayon-carte) var(--rayon-carte);}
+        .saisie-modal{padding:9px 12px;border:1.5px solid var(--couleur-bordure);border-radius:var(--rayon-element);font-size:13.5px;font-family:var(--police);color:var(--couleur-texte-principal);background:#F8FAFF;outline:none;transition:var(--transition);width:100%;}
+        .saisie-modal:focus{border-color:var(--couleur-principale);background:#fff;box-shadow:0 0 0 3px rgba(67,97,238,0.1);}
+        .bloc-validation{background:var(--couleur-fond);border-radius:10px;padding:14px 16px;margin-bottom:14px;}
+        .titre-bloc{font-size:11px;font-weight:700;color:var(--couleur-texte-secondaire);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;}
+        .ligne-detail{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:3px 0;}
+        .ligne-detail span:first-child{color:var(--couleur-texte-secondaire);}
+        .ligne-detail span:last-child{font-weight:600;color:var(--couleur-texte-principal);}
+        .volume-highlight{background:linear-gradient(135deg,rgba(67,97,238,0.07),rgba(114,9,183,0.07));border:1px solid rgba(67,97,238,0.15);border-radius:10px;padding:14px 16px;text-align:center;margin-bottom:14px;}
+        .vol-label{font-size:11px;font-weight:700;color:var(--couleur-principale);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;}
+        .vol-valeur{font-size:32px;font-weight:700;color:var(--couleur-principale);}
+        .onglets-validation{display:flex;border-bottom:1px solid var(--couleur-bordure);margin-bottom:0;}
+        .onglet{padding:12px 20px;font-size:13.5px;font-weight:600;color:var(--couleur-texte-secondaire);cursor:pointer;border-bottom:2px solid transparent;transition:var(--transition);display:flex;align-items:center;gap:7px;}
+        .onglet.actif{color:var(--couleur-principale);border-bottom-color:var(--couleur-principale);}
+        .onglet:hover{color:var(--couleur-texte-principal);}
+        .compteur-onglet{font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;background:var(--couleur-fond);color:var(--couleur-texte-secondaire);}
+        .onglet.actif .compteur-onglet{background:rgba(67,97,238,0.1);color:var(--couleur-principale);}
+        .contenu-onglet{display:none;}
+        .contenu-onglet.actif{display:block;}
+    </style>
+</head>
+<body>
+<div id="superposition-mobile"></div>
+<div id="enveloppe">
+
+    <aside id="barre-laterale">
+        <div class="logo-barre"><div class="logo-icone"><i class="bi bi-mortarboard-fill"></i></div><div><div class="logo-nom">UVCI</div><div class="logo-sous-titre">Heures Enseignants</div></div></div>
+        <nav class="navigation-barre">
+            <div class="groupe-navigation"><a href="tableau-de-bord.html" class="lien-navigation"><i class="bi bi-grid-1x2"></i>Tableau de bord</a></div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Gestion</div>
+                <a href="enseignants.html" class="lien-navigation"><i class="bi bi-people"></i>Enseignants</a>
+                <a href="cours.html" class="lien-navigation"><i class="bi bi-book"></i>Cours</a>
+                <a href="sequences.html" class="lien-navigation"><i class="bi bi-collection"></i>Séquences pédagogiques</a>
+                <a href="ressources.html" class="lien-navigation"><i class="bi bi-file-earmark-richtext"></i>Ressources pédagogiques</a>
+            </div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Suivi</div>
+                <a href="activites.html" class="lien-navigation"><i class="bi bi-activity"></i>Activités pédagogiques</a>
+                <a href="calcul-heures.html" class="lien-navigation"><i class="bi bi-calculator"></i>Calcul des heures</a>
+                <a href="validations.html" class="lien-navigation actif"><i class="bi bi-check2-circle"></i>Validations<span class="badge-nav">17</span></a>
+            </div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Rapports</div>
+                <a href="etats-recapitulatifs.html" class="lien-navigation"><i class="bi bi-file-earmark-bar-graph"></i>États récapitulatifs</a>
+            </div>
+            <div class="groupe-navigation"><div class="titre-groupe">Système</div><a href="parametres.html" class="lien-navigation"><i class="bi bi-gear"></i>Paramètres</a></div>
+        </nav>
+        <div class="profil-barre"><div class="avatar-profil">SP</div><div class="info-profil"><div class="nom-profil">Secrétaire UVCI</div><div class="role-profil">Secrétaire principal</div></div><button class="bouton-deconnexion" onclick="window.location.href='connexion.html'"><i class="bi bi-box-arrow-right"></i></button></div>
+    </aside>
+
+    <div id="contenu-principal">
+        <header id="barre-navigation">
+            <div class="navigation-gauche">
+                <button class="bouton-basculer" id="bouton-basculer"><i class="bi bi-list"></i></button>
+                <nav class="fil-ariane"><span>UVCI</span><span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span><span>Suivi</span><span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span><span>Validations</span></nav>
+            </div>
+            <div class="navigation-droite">
+                <button class="bouton-icone-nav"><i class="bi bi-bell"></i><span class="pastille-notif"></span></button>
+                <div class="separateur-nav"></div>
+                <div class="mini-profil-nav"><div class="mini-avatar-nav">SP</div><span class="mini-nom-nav">Secrétaire UVCI</span></div>
+            </div>
+        </header>
+
+        <main id="zone-contenu">
+            <div class="en-tete-page">
+                <div class="groupe-titre">
+                    <h1 class="titre-page">Validations</h1>
+                    <p class="sous-titre-page">Gérez les activités pédagogiques soumises par les enseignants</p>
+                </div>
+                <div class="actions-page">
+                    <button class="btn btn-contour" onclick="toutValider()"><i class="bi bi-check2-all"></i>Tout valider</button>
+                </div>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="grille-statistiques" style="margin-bottom:20px">
+                <div class="carte-statistique accent-avertissement" style="padding:16px 18px"><div class="etiquette-stat">En attente</div><div class="valeur-stat" style="font-size:26px" id="compteur-attente">17</div><div class="evolution-stat baisse"><i class="bi bi-exclamation-circle"></i>Action requise</div><i class="bi bi-hourglass icone-fond-stat"></i></div>
+                <div class="carte-statistique accent-succes" style="padding:16px 18px"><div class="etiquette-stat">Validées aujourd'hui</div><div class="valeur-stat" style="font-size:26px">8</div><div class="evolution-stat hausse"><i class="bi bi-arrow-up-short"></i>+8 ce jour</div><i class="bi bi-check-circle icone-fond-stat"></i></div>
+                <div class="carte-statistique accent-danger" style="padding:16px 18px"><div class="etiquette-stat">Rejetées</div><div class="valeur-stat" style="font-size:26px">3</div><div class="evolution-stat">Ce mois</div><i class="bi bi-x-circle icone-fond-stat"></i></div>
+                <div class="carte-statistique" style="padding:16px 18px"><div class="etiquette-stat">Heures en attente</div><div class="valeur-stat" style="font-size:26px">342</div><div class="evolution-stat">Volume total</div><i class="bi bi-clock icone-fond-stat"></i></div>
+            </div>
+
+            <!-- Onglets -->
+            <div class="carte">
+                <div class="onglets-validation">
+                    <div class="onglet actif" onclick="changerOnglet('attente',this)"><i class="bi bi-hourglass"></i>En attente<span class="compteur-onglet">17</span></div>
+                    <div class="onglet" onclick="changerOnglet('validees',this)"><i class="bi bi-check-lg"></i>Validées<span class="compteur-onglet">224</span></div>
+                    <div class="onglet" onclick="changerOnglet('rejetees',this)"><i class="bi bi-x-lg"></i>Rejetées<span class="compteur-onglet">7</span></div>
+                </div>
+
+                <!-- Onglet En attente -->
+                <div class="contenu-onglet actif" id="tab-attente">
+                    <div style="padding:14px 22px;border-bottom:1px solid var(--couleur-bordure)">
+                        <div class="barre-outils">
+                            <div class="champ-recherche"><i class="bi bi-search"></i><input type="text" placeholder="Rechercher un enseignant…"></div>
+                            <select class="selecteur-filtre"><option value="">Tous les niveaux</option><option>Niveau 1</option><option>Niveau 2</option><option>Niveau 3</option></select>
+                        </div>
+                    </div>
+                    <div class="conteneur-tableau">
+                        <table class="tableau-donnees">
+                            <thead>
+                                <tr>
+                                    <th style="width:40px"><input type="checkbox" id="tout-cocher" onchange="cochertout(this)" style="accent-color:var(--couleur-principale)"></th>
+                                    <th>Enseignant</th>
+                                    <th>Cours</th>
+                                    <th class="colonne-masquable">Type</th>
+                                    <th class="colonne-masquable">Niv.</th>
+                                    <th>Heures</th>
+                                    <th class="colonne-masquable">Soumis le</th>
+                                    <th style="text-align:right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corps-attente">
+                                <tr>
+                                    <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                    <td><div class="cellule-personne"><div class="avatar-tableau vert">DT</div><div><div class="nom-cellule">Djeninba Traoré</div><div class="detail-cellule">Informatique</div></div></div></td>
+                                    <td><div style="font-weight:600">BDD Avancées</div><div class="detail-cellule">L3 — 3 crédits</div></td>
+                                    <td class="colonne-masquable"><span class="badge badge-info">Création</span></td>
+                                    <td class="colonne-masquable"><span class="badge badge-neutre">N3</span></td>
+                                    <td><strong style="color:var(--couleur-principale)">120 h</strong></td>
+                                    <td class="texte-secondaire-tableau colonne-masquable">14/06/2026</td>
+                                    <td><div class="actions-tableau" style="justify-content:flex-end;gap:6px">
+                                        <button class="btn btn-petit btn-succes" onclick="validerActivite(this,'Djeninba Traoré')"><i class="bi bi-check-lg"></i>Valider</button>
+                                        <button class="btn btn-petit btn-danger" onclick="ouvrirModalRejet('Djeninba Traoré — BDD Avancées')"><i class="bi bi-x-lg"></i>Rejeter</button>
+                                    </div></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                    <td><div class="cellule-personne"><div class="avatar-tableau orange">GD</div><div><div class="nom-cellule">Gerard Deungo</div><div class="detail-cellule">Sciences</div></div></div></td>
+                                    <td><div style="font-weight:600">Réseaux</div><div class="detail-cellule">M1 — 4 crédits</div></td>
+                                    <td class="colonne-masquable"><span class="badge badge-violet">Mise à jour</span></td>
+                                    <td class="colonne-masquable"><span class="badge badge-neutre">N3</span></td>
+                                    <td><strong style="color:var(--couleur-principale)">120 h</strong></td>
+                                    <td class="texte-secondaire-tableau colonne-masquable">15/06/2026</td>
+                                    <td><div class="actions-tableau" style="justify-content:flex-end;gap:6px">
+                                        <button class="btn btn-petit btn-succes" onclick="validerActivite(this,'Gerard Deungo')"><i class="bi bi-check-lg"></i>Valider</button>
+                                        <button class="btn btn-petit btn-danger" onclick="ouvrirModalRejet('Gerard Deungo — Réseaux')"><i class="bi bi-x-lg"></i>Rejeter</button>
+                                    </div></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                    <td><div class="cellule-personne"><div class="avatar-tableau violet">DS</div><div><div class="nom-cellule">Dah Sébastien</div><div class="detail-cellule">Informatique</div></div></div></td>
+                                    <td><div style="font-weight:600">Prog. Web</div><div class="detail-cellule">L2 — 2 crédits</div></td>
+                                    <td class="colonne-masquable"><span class="badge badge-info">Création</span></td>
+                                    <td class="colonne-masquable"><span class="badge badge-neutre">N2</span></td>
+                                    <td><strong style="color:var(--couleur-principale)">60 h</strong></td>
+                                    <td class="texte-secondaire-tableau colonne-masquable">16/06/2026</td>
+                                    <td><div class="actions-tableau" style="justify-content:flex-end;gap:6px">
+                                        <button class="btn btn-petit btn-succes" onclick="validerActivite(this,'Dah Sébastien')"><i class="bi bi-check-lg"></i>Valider</button>
+                                        <button class="btn btn-petit btn-danger" onclick="ouvrirModalRejet('Dah Sébastien — Prog. Web')"><i class="bi bi-x-lg"></i>Rejeter</button>
+                                    </div></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="checkbox" style="accent-color:var(--couleur-principale)"></td>
+                                    <td><div class="cellule-personne"><div class="avatar-tableau cyan">AK</div><div><div class="nom-cellule">Ameku Kephas</div><div class="detail-cellule">Mathématiques</div></div></div></td>
+                                    <td><div style="font-weight:600">Algo. avancé</div><div class="detail-cellule">L3 — 2 crédits</div></td>
+                                    <td class="colonne-masquable"><span class="badge badge-info">Création</span></td>
+                                    <td class="colonne-masquable"><span class="badge badge-neutre">N2</span></td>
+                                    <td><strong style="color:var(--couleur-principale)">60 h</strong></td>
+                                    <td class="texte-secondaire-tableau colonne-masquable">17/06/2026</td>
+                                    <td><div class="actions-tableau" style="justify-content:flex-end;gap:6px">
+                                        <button class="btn btn-petit btn-succes" onclick="validerActivite(this,'Ameku Kephas')"><i class="bi bi-check-lg"></i>Valider</button>
+                                        <button class="btn btn-petit btn-danger" onclick="ouvrirModalRejet('Ameku Kephas — Algo. avancé')"><i class="bi bi-x-lg"></i>Rejeter</button>
+                                    </div></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Onglet Validées -->
+                <div class="contenu-onglet" id="tab-validees">
+                    <div class="conteneur-tableau">
+                        <table class="tableau-donnees">
+                            <thead><tr><th>Enseignant</th><th>Cours</th><th class="colonne-masquable">Heures</th><th>Validé par</th><th class="colonne-masquable">Date validation</th></tr></thead>
+                            <tbody>
+                                <tr><td><div class="cellule-personne"><div class="avatar-tableau bleu">KY</div><div class="nom-cellule">Konan Yao J-P</div></div></td><td>Prog. Web (L2)</td><td class="colonne-masquable"><strong>60 h</strong></td><td class="texte-secondaire-tableau">Secrétaire UVCI</td><td class="texte-secondaire-tableau colonne-masquable">12/06/2026</td></tr>
+                                <tr><td><div class="cellule-personne"><div class="avatar-tableau cyan">AK</div><div class="nom-cellule">Ameku Kephas</div></div></td><td>Algorithmique (L1)</td><td class="colonne-masquable"><strong>16 h</strong></td><td class="texte-secondaire-tableau">Admin UVCI</td><td class="texte-secondaire-tableau colonne-masquable">08/06/2026</td></tr>
+                                <tr><td><div class="cellule-personne"><div class="avatar-tableau vert">DT</div><div class="nom-cellule">Djeninba Traoré</div></div></td><td>Analyse (L2)</td><td class="colonne-masquable"><strong>32 h</strong></td><td class="texte-secondaire-tableau">Secrétaire UVCI</td><td class="texte-secondaire-tableau colonne-masquable">05/06/2026</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Onglet Rejetées -->
+                <div class="contenu-onglet" id="tab-rejetees">
+                    <div class="conteneur-tableau">
+                        <table class="tableau-donnees">
+                            <thead><tr><th>Enseignant</th><th>Cours</th><th class="colonne-masquable">Heures</th><th>Motif de rejet</th><th style="text-align:right">Actions</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td><div class="cellule-personne"><div class="avatar-tableau violet">DS</div><div class="nom-cellule">Dah Sébastien</div></div></td>
+                                    <td>Intro Prog. (L1)</td>
+                                    <td class="colonne-masquable"><strong>30 h</strong></td>
+                                    <td><span style="font-size:12.5px;color:var(--couleur-texte-secondaire)">Niveau de contenu non justifié</span></td>
+                                    <td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn btn-petit btn-contour" onclick="afficherToast('Activité remise en attente.','info')"><i class="bi bi-arrow-counterclockwise"></i>Remettre</button></div></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer id="pied-page">© 2026 Université Virtuelle de Côte d'Ivoire — Application de gestion des heures des enseignants</footer>
+    </div>
+</div>
+
+<!-- MODAL Motif de rejet -->
+<div class="superposition-modal" id="modal-rejet">
+    <div class="fenetre-modal">
+        <div class="en-tete-modal">
+            <div class="titre-modal" style="color:var(--couleur-danger)"><i class="bi bi-x-circle" style="color:var(--couleur-danger)"></i>Rejeter l'activité</div>
+            <button class="bouton-fermer-modal" onclick="fermerModal('modal-rejet')"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="corps-modal">
+            <div style="background:#FDEEF0;border-radius:9px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#C42B3C;display:flex;gap:8px;align-items:flex-start">
+                <i class="bi bi-exclamation-triangle" style="flex-shrink:0;margin-top:1px"></i>
+                <span>L'enseignant sera notifié du rejet et devra corriger sa déclaration. Saisir un motif clair pour l'aider.</span>
+            </div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">Activité concernée</div>
+            <div style="font-size:13.5px;color:var(--couleur-texte-secondaire);margin-bottom:16px" id="label-rejet"></div>
+            <div style="font-size:12.5px;font-weight:600;color:var(--couleur-texte-principal);margin-bottom:6px">Motif de rejet <span style="color:var(--couleur-danger)">*</span></div>
+            <textarea id="motif-rejet" class="saisie-modal" rows="4" placeholder="Ex. : Le niveau de contenu déclaré (Niveau 3) ne correspond pas aux ressources fournies. Merci de revoir la classification." style="resize:vertical"></textarea>
+        </div>
+        <div class="pied-modal">
+            <button class="btn btn-contour" onclick="fermerModal('modal-rejet')">Annuler</button>
+            <button class="btn btn-danger" onclick="confirmerRejet()"><i class="bi bi-x-lg"></i>Confirmer le rejet</button>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/principal.js"></script>
+<script>
+function ouvrirModal(id){document.getElementById(id).classList.add('ouverte');document.body.style.overflow='hidden';}
+function fermerModal(id){document.getElementById(id).classList.remove('ouverte');document.body.style.overflow='';}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){document.querySelectorAll('.superposition-modal.ouverte').forEach(function(m){m.classList.remove('ouverte')});document.body.style.overflow='';}});
+document.querySelectorAll('.superposition-modal').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)fermerModal(m.id)});});
+
+function changerOnglet(id,el){
+    document.querySelectorAll('.onglet').forEach(function(o){o.classList.remove('actif')});
+    document.querySelectorAll('.contenu-onglet').forEach(function(c){c.classList.remove('actif')});
+    el.classList.add('actif');
+    document.getElementById('tab-'+id).classList.add('actif');
+}
+function validerActivite(btn,nom){
+    var ligne=btn.closest('tr');
+    if(ligne)ligne.style.opacity='0.4';
+    afficherToast(nom+' — activité validée avec succès.','succes');
+    var c=document.getElementById('compteur-attente');
+    if(c)c.textContent=Math.max(0,parseInt(c.textContent)-1);
+}
+function toutValider(){
+    document.querySelectorAll('#corps-attente tr').forEach(function(r){r.style.opacity='0.4'});
+    afficherToast('Toutes les activités en attente ont été validées.','succes');
+    document.getElementById('compteur-attente').textContent='0';
+}
+function ouvrirModalRejet(label){document.getElementById('label-rejet').textContent=label;document.getElementById('motif-rejet').value='';ouvrirModal('modal-rejet');}
+function confirmerRejet(){var m=document.getElementById('motif-rejet').value.trim();if(!m){afficherToast('Le motif de rejet est obligatoire.','avertissement');return;}afficherToast('Activité rejetée. L\'enseignant a été notifié.','info');fermerModal('modal-rejet');}
+function cochertout(cb){document.querySelectorAll('#corps-attente input[type=checkbox]').forEach(function(c){c.checked=cb.checked});}
+</script>
+</body>
+</html>
