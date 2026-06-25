@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon espace — UVCI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .profil-hero{background:linear-gradient(135deg,#1B2559 0%,#4361EE 100%);border-radius:var(--rayon-carte);padding:28px 30px;display:flex;align-items:center;gap:22px;margin-bottom:22px;color:#fff;}
+        .avatar-hero{width:72px;height:72px;border-radius:18px;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;flex-shrink:0;border:2px solid rgba(255,255,255,0.3);}
+        .nom-hero{font-size:22px;font-weight:700;margin-bottom:4px;}
+        .meta-hero{font-size:13px;opacity:0.75;margin-bottom:10px;}
+        .badges-hero{display:flex;gap:8px;flex-wrap:wrap;}
+        .badge-hero{font-size:11px;font-weight:600;padding:3px 11px;border-radius:20px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);}
+        .stats-hero{margin-left:auto;display:flex;gap:24px;flex-shrink:0;}
+        .stat-hero{text-align:center;}
+        .val-hero{font-size:28px;font-weight:700;line-height:1;}
+        .lab-hero{font-size:10px;opacity:0.65;margin-top:4px;white-space:nowrap;}
+        .carte-activite{border:1px solid var(--couleur-bordure);border-radius:12px;padding:16px;background:var(--couleur-carte);margin-bottom:10px;display:flex;align-items:flex-start;gap:14px;transition:var(--transition);}
+        .carte-activite:hover{border-color:var(--couleur-principale);box-shadow:0 2px 12px rgba(67,97,238,0.08);}
+        .icone-activite-e{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+        .creation{background:#EAF0FE;color:#4361EE;}
+        .mise-a-jour{background:#F2EAFE;color:#7209B7;}
+        .info-activite{flex:1;}
+        .titre-activite{font-size:14px;font-weight:600;color:var(--couleur-texte-principal);margin-bottom:3px;}
+        .detail-activite{font-size:12px;color:var(--couleur-texte-secondaire);}
+        .meta-activite{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+        .formule-badge{font-size:11px;font-family:monospace;background:var(--couleur-fond);padding:2px 8px;border-radius:5px;color:var(--couleur-texte-secondaire);}
+        .heures-activite{text-align:right;flex-shrink:0;}
+        .val-heures{font-size:20px;font-weight:700;color:var(--couleur-principale);}
+        .lab-heures{font-size:10px;color:var(--couleur-texte-secondaire);}
+        .barre-progression{height:8px;background:var(--couleur-bordure);border-radius:4px;overflow:hidden;}
+        .barre-remplie{height:100%;background:var(--couleur-principale);border-radius:4px;}
+        @media(max-width:700px){.stats-hero{display:none;}.profil-hero{flex-wrap:wrap;}}
+    </style>
+</head>
+<body>
+<div id="superposition-mobile"></div>
+<div id="enveloppe">
+
+    <aside id="barre-laterale">
+        <div class="logo-barre"><div class="logo-icone"><i class="bi bi-mortarboard-fill"></i></div><div><div class="logo-nom">UVCI</div><div class="logo-sous-titre">Heures Enseignants</div></div></div>
+        <nav class="navigation-barre">
+            <div class="groupe-navigation">
+                <a href="espace-enseignant.html" class="lien-navigation actif"><i class="bi bi-house"></i>Mon tableau de bord</a>
+            </div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Mes activités</div>
+                <a href="activites.html" class="lien-navigation"><i class="bi bi-activity"></i>Déclarer une activité</a>
+                <a href="#" class="lien-navigation"><i class="bi bi-clock-history"></i>Historique</a>
+            </div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Mes heures</div>
+                <a href="#" class="lien-navigation"><i class="bi bi-calculator"></i>Volume horaire</a>
+                <a href="#" class="lien-navigation"><i class="bi bi-file-earmark-person"></i>Ma fiche individuelle</a>
+            </div>
+        </nav>
+        <div class="profil-barre"><div class="avatar-profil">KY</div><div class="info-profil"><div class="nom-profil">Konan Yao Jean-Paul</div><div class="role-profil">Enseignant</div></div><button class="bouton-deconnexion" onclick="window.location.href='connexion.html'"><i class="bi bi-box-arrow-right"></i></button></div>
+    </aside>
+
+    <div id="contenu-principal">
+        <header id="barre-navigation">
+            <div class="navigation-gauche">
+                <button class="bouton-basculer" id="bouton-basculer"><i class="bi bi-list"></i></button>
+                <nav class="fil-ariane"><span>UVCI</span><span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span><span>Mon espace</span></nav>
+            </div>
+            <div class="navigation-droite">
+                <button class="bouton-icone-nav" title="Notifications"><i class="bi bi-bell"></i><span class="pastille-notif"></span></button>
+                <div class="separateur-nav"></div>
+                <div class="mini-profil-nav"><div class="mini-avatar-nav">KY</div><span class="mini-nom-nav">Konan Yao J-P</span></div>
+            </div>
+        </header>
+
+        <main id="zone-contenu">
+
+            <!-- Profil hero -->
+            <div class="profil-hero">
+                <div class="avatar-hero">KY</div>
+                <div>
+                    <div class="nom-hero">Konan Yao Jean-Paul</div>
+                    <div class="meta-hero">Maître-Assistant · Département Informatique · Permanent</div>
+                    <div class="badges-hero">
+                        <span class="badge-hero"><i class="bi bi-calendar3"></i> Année 2025–2026</span>
+                        <span class="badge-hero"><i class="bi bi-envelope"></i> konan.yao@uvci.edu.ci</span>
+                        <span class="badge-hero"><i class="bi bi-cash"></i> 6 500 FCFA/heure</span>
+                    </div>
+                </div>
+                <div class="stats-hero">
+                    <div class="stat-hero"><div class="val-hero">284</div><div class="lab-hero">Heures validées</div></div>
+                    <div class="stat-hero"><div class="val-hero" style="color:#05C48A">+48</div><div class="lab-hero">H. complémentaires</div></div>
+                    <div class="stat-hero"><div class="val-hero">3</div><div class="lab-hero">Cours actifs</div></div>
+                    <div class="stat-hero"><div class="val-hero">2</div><div class="lab-hero">En attente</div></div>
+                </div>
+            </div>
+
+            <!-- Action rapide -->
+            <div style="display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap">
+                <button class="btn btn-principal" onclick="afficherToast('Redirection vers la déclaration d\'activité…','info')">
+                    <i class="bi bi-plus-lg"></i>Déclarer une activité
+                </button>
+                <button class="btn btn-contour" onclick="afficherToast('Génération de votre fiche individuelle…','info')">
+                    <i class="bi bi-file-earmark-pdf"></i>Télécharger ma fiche
+                </button>
+            </div>
+
+            <!-- Grille principale -->
+            <div class="grille-trois-un" style="margin-bottom:22px">
+
+                <!-- Mes activités récentes -->
+                <div class="carte">
+                    <div class="en-tete-carte">
+                        <div class="titre-carte"><i class="bi bi-activity"></i>Mes activités déclarées</div>
+                        <select class="selecteur-filtre" style="font-size:12px;padding:5px 26px 5px 10px">
+                            <option>Toutes</option><option>En attente</option><option>Validées</option><option>Rejetées</option>
+                        </select>
+                    </div>
+                    <div style="padding:16px">
+
+                        <div class="carte-activite">
+                            <div class="icone-activite-e creation"><i class="bi bi-plus-circle"></i></div>
+                            <div class="info-activite">
+                                <div class="titre-activite">Programmation Web</div>
+                                <div class="detail-activite">L2 · Semestre 2 · 2 crédits</div>
+                                <div class="meta-activite">
+                                    <span class="badge badge-info" style="font-size:10px">Création</span>
+                                    <span class="badge badge-neutre" style="font-size:10px">Niveau 2</span>
+                                    <span class="formule-badge">80 × 0,75 = 60 h</span>
+                                </div>
+                            </div>
+                            <div class="heures-activite">
+                                <div class="val-heures">60 h</div>
+                                <div style="margin-top:4px"><span class="badge badge-succes" style="font-size:10px"><i class="bi bi-check-lg"></i> Validée</span></div>
+                            </div>
+                        </div>
+
+                        <div class="carte-activite">
+                            <div class="icone-activite-e mise-a-jour"><i class="bi bi-arrow-repeat"></i></div>
+                            <div class="info-activite">
+                                <div class="titre-activite">Algorithmique L1</div>
+                                <div class="detail-activite">L1 · Semestre 1 · 2 crédits</div>
+                                <div class="meta-activite">
+                                    <span class="badge badge-violet" style="font-size:10px">Mise à jour</span>
+                                    <span class="badge badge-neutre" style="font-size:10px">Niveau 1</span>
+                                    <span class="formule-badge">80 × 0,20 = 16 h</span>
+                                </div>
+                            </div>
+                            <div class="heures-activite">
+                                <div class="val-heures">16 h</div>
+                                <div style="margin-top:4px"><span class="badge badge-succes" style="font-size:10px"><i class="bi bi-check-lg"></i> Validée</span></div>
+                            </div>
+                        </div>
+
+                        <div class="carte-activite">
+                            <div class="icone-activite-e creation"><i class="bi bi-plus-circle"></i></div>
+                            <div class="info-activite">
+                                <div class="titre-activite">Réseaux L2</div>
+                                <div class="detail-activite">L2 · Semestre 1 · 3 crédits</div>
+                                <div class="meta-activite">
+                                    <span class="badge badge-info" style="font-size:10px">Création</span>
+                                    <span class="badge badge-neutre" style="font-size:10px">Niveau 3</span>
+                                    <span class="formule-badge">120 × 1,50 = 180 h</span>
+                                </div>
+                            </div>
+                            <div class="heures-activite">
+                                <div class="val-heures">180 h</div>
+                                <div style="margin-top:4px"><span class="badge badge-succes" style="font-size:10px"><i class="bi bi-check-lg"></i> Validée</span></div>
+                            </div>
+                        </div>
+
+                        <div class="carte-activite" style="border-color:var(--couleur-avertissement)">
+                            <div class="icone-activite-e creation"><i class="bi bi-plus-circle"></i></div>
+                            <div class="info-activite">
+                                <div class="titre-activite">Structures de données</div>
+                                <div class="detail-activite">L3 · Semestre 2 · 2 crédits</div>
+                                <div class="meta-activite">
+                                    <span class="badge badge-info" style="font-size:10px">Création</span>
+                                    <span class="badge badge-neutre" style="font-size:10px">Niveau 2</span>
+                                    <span class="formule-badge">80 × 0,75 = 60 h</span>
+                                </div>
+                            </div>
+                            <div class="heures-activite">
+                                <div class="val-heures">60 h</div>
+                                <div style="margin-top:4px"><span class="badge badge-avertissement" style="font-size:10px"><i class="bi bi-clock"></i> En attente</span></div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="pied-carte" style="text-align:center">
+                        <a href="activites.html" style="font-size:12.5px;color:var(--couleur-principale);font-weight:600">Voir toutes mes activités →</a>
+                    </div>
+                </div>
+
+                <!-- Panneau droit -->
+                <div>
+                    <!-- Volume horaire -->
+                    <div class="carte" style="margin-bottom:16px">
+                        <div class="en-tete-carte"><div class="titre-carte"><i class="bi bi-clock"></i>Mon volume horaire</div></div>
+                        <div class="corps-carte">
+                            <div style="text-align:center;margin-bottom:16px">
+                                <div style="font-size:42px;font-weight:700;color:var(--couleur-principale);line-height:1">284</div>
+                                <div style="font-size:13px;color:var(--couleur-texte-secondaire);margin-top:4px">heures validées cette année</div>
+                            </div>
+                            <div style="margin-bottom:12px">
+                                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="color:var(--couleur-texte-secondaire)">Charge atteinte</span><span style="font-weight:700">284 / 240 h</span></div>
+                                <div class="barre-progression"><div class="barre-remplie" style="width:100%;background:var(--couleur-succes)"></div></div>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                                <div style="background:var(--couleur-fond);border-radius:9px;padding:11px;text-align:center">
+                                    <div style="font-size:18px;font-weight:700;color:var(--couleur-succes)">+48 h</div>
+                                    <div style="font-size:11px;color:var(--couleur-texte-secondaire)">Complémentaires</div>
+                                </div>
+                                <div style="background:var(--couleur-fond);border-radius:9px;padding:11px;text-align:center">
+                                    <div style="font-size:18px;font-weight:700;color:var(--couleur-principale)">1 846 000</div>
+                                    <div style="font-size:11px;color:var(--couleur-texte-secondaire)">FCFA estimé</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mes cours -->
+                    <div class="carte">
+                        <div class="en-tete-carte"><div class="titre-carte"><i class="bi bi-book"></i>Mes cours</div></div>
+                        <div style="padding:0">
+                            <div style="padding:13px 16px;border-bottom:1px solid var(--couleur-bordure);display:flex;justify-content:space-between;align-items:center">
+                                <div><div style="font-size:13px;font-weight:600">Prog. Web</div><div style="font-size:11px;color:var(--couleur-texte-secondaire)">L2 — 2 crédits</div></div>
+                                <span class="badge badge-succes" style="font-size:10px">60 h</span>
+                            </div>
+                            <div style="padding:13px 16px;border-bottom:1px solid var(--couleur-bordure);display:flex;justify-content:space-between;align-items:center">
+                                <div><div style="font-size:13px;font-weight:600">Algorithmique L1</div><div style="font-size:11px;color:var(--couleur-texte-secondaire)">L1 — 2 crédits</div></div>
+                                <span class="badge badge-succes" style="font-size:10px">16 h</span>
+                            </div>
+                            <div style="padding:13px 16px;display:flex;justify-content:space-between;align-items:center">
+                                <div><div style="font-size:13px;font-weight:600">Réseaux L2</div><div style="font-size:11px;color:var(--couleur-texte-secondaire)">L2 — 3 crédits</div></div>
+                                <span class="badge badge-succes" style="font-size:10px">180 h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+        <footer id="pied-page">© 2026 Université Virtuelle de Côte d'Ivoire — Application de gestion des heures des enseignants</footer>
+    </div>
+</div>
+<script src="assets/js/principal.js"></script>
+</body>
+</html>

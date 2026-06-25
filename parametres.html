@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paramètres — UVCI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .onglets{display:flex;border-bottom:1px solid var(--couleur-bordure);margin-bottom:0;background:var(--couleur-carte);}
+        .onglet{padding:13px 20px;font-size:13.5px;font-weight:600;color:var(--couleur-texte-secondaire);cursor:pointer;border-bottom:2px solid transparent;transition:var(--transition);display:flex;align-items:center;gap:7px;white-space:nowrap;}
+        .onglet.actif{color:var(--couleur-principale);border-bottom-color:var(--couleur-principale);}
+        .onglet:hover{color:var(--couleur-texte-principal);}
+        .contenu-onglet{display:none;padding:22px;}
+        .contenu-onglet.actif{display:block;}
+        .groupe-champ{display:flex;flex-direction:column;gap:5px;margin-bottom:16px;}
+        .etiquette{font-size:12.5px;font-weight:600;color:var(--couleur-texte-principal);}
+        .saisie{padding:9px 12px;border:1.5px solid var(--couleur-bordure);border-radius:var(--rayon-element);font-size:13.5px;font-family:var(--police);color:var(--couleur-texte-principal);background:#F8FAFF;outline:none;transition:var(--transition);width:100%;}
+        .saisie:focus{border-color:var(--couleur-principale);background:#fff;box-shadow:0 0 0 3px rgba(67,97,238,0.1);}
+        select.saisie{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B94B2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;cursor:pointer;}
+        .grille-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+        .grille-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+        .table-coefs{width:100%;border-collapse:collapse;font-size:13px;}
+        .table-coefs th{padding:10px 14px;text-align:left;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--couleur-texte-secondaire);background:var(--couleur-fond);border-bottom:1px solid var(--couleur-bordure);}
+        .table-coefs td{padding:12px 14px;border-bottom:1px solid var(--couleur-bordure);vertical-align:middle;}
+        .table-coefs tr:last-child td{border-bottom:none;}
+        .table-coefs tr:hover td{background:#F5F7FE;}
+        .champ-coef{padding:6px 10px;border:1.5px solid var(--couleur-bordure);border-radius:6px;font-size:13px;font-family:var(--police);width:90px;outline:none;text-align:center;}
+        .champ-coef:focus{border-color:var(--couleur-principale);box-shadow:0 0 0 3px rgba(67,97,238,0.1);}
+        .annee-active{border:2px solid var(--couleur-principale);border-radius:12px;padding:16px 18px;background:rgba(67,97,238,0.04);position:relative;margin-bottom:12px;}
+        .annee-inactive{border:1px solid var(--couleur-bordure);border-radius:12px;padding:16px 18px;background:var(--couleur-carte);margin-bottom:12px;}
+        .label-active{position:absolute;top:-10px;left:14px;background:var(--couleur-principale);color:#fff;font-size:10px;font-weight:700;padding:2px 9px;border-radius:10px;}
+        .alerte-admin{background:#FEF5E0;border:1px solid #F7B731;border-radius:10px;padding:12px 14px;font-size:13px;color:#92610A;display:flex;gap:10px;align-items:flex-start;margin-bottom:20px;}
+        @media(max-width:700px){.grille-2,.grille-3{grid-template-columns:1fr;}.onglet span.label-onglet{display:none;}}
+    </style>
+</head>
+<body>
+<div id="superposition-mobile"></div>
+<div id="enveloppe">
+
+    <aside id="barre-laterale">
+        <div class="logo-barre"><div class="logo-icone"><i class="bi bi-mortarboard-fill"></i></div><div><div class="logo-nom">UVCI</div><div class="logo-sous-titre">Heures Enseignants</div></div></div>
+        <nav class="navigation-barre">
+            <div class="groupe-navigation"><a href="tableau-de-bord.html" class="lien-navigation"><i class="bi bi-grid-1x2"></i>Tableau de bord</a></div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Gestion</div>
+                <a href="enseignants.html" class="lien-navigation"><i class="bi bi-people"></i>Enseignants</a>
+                <a href="cours.html" class="lien-navigation"><i class="bi bi-book"></i>Cours</a>
+                <a href="sequences.html" class="lien-navigation"><i class="bi bi-collection"></i>Séquences pédagogiques</a>
+                <a href="ressources.html" class="lien-navigation"><i class="bi bi-file-earmark-richtext"></i>Ressources pédagogiques</a>
+            </div>
+            <div class="groupe-navigation">
+                <div class="titre-groupe">Suivi</div>
+                <a href="activites.html" class="lien-navigation"><i class="bi bi-activity"></i>Activités pédagogiques</a>
+                <a href="calcul-heures.html" class="lien-navigation"><i class="bi bi-calculator"></i>Calcul des heures</a>
+                <a href="validations.html" class="lien-navigation"><i class="bi bi-check2-circle"></i>Validations<span class="badge-nav">5</span></a>
+            </div>
+            <div class="groupe-navigation"><div class="titre-groupe">Rapports</div><a href="etats-recapitulatifs.html" class="lien-navigation"><i class="bi bi-file-earmark-bar-graph"></i>États récapitulatifs</a></div>
+            <div class="groupe-navigation"><div class="titre-groupe">Système</div><a href="parametres.html" class="lien-navigation actif"><i class="bi bi-gear"></i>Paramètres</a></div>
+        </nav>
+        <div class="profil-barre"><div class="avatar-profil">AK</div><div class="info-profil"><div class="nom-profil">Admin UVCI</div><div class="role-profil">Administrateur</div></div><button class="bouton-deconnexion" onclick="window.location.href='connexion.html'"><i class="bi bi-box-arrow-right"></i></button></div>
+    </aside>
+
+    <div id="contenu-principal">
+        <header id="barre-navigation">
+            <div class="navigation-gauche">
+                <button class="bouton-basculer" id="bouton-basculer"><i class="bi bi-list"></i></button>
+                <nav class="fil-ariane"><span>UVCI</span><span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span><span>Système</span><span class="separateur-ariane"><i class="bi bi-chevron-right"></i></span><span>Paramètres</span></nav>
+            </div>
+            <div class="navigation-droite">
+                <button class="bouton-icone-nav"><i class="bi bi-bell"></i><span class="pastille-notif"></span></button>
+                <div class="separateur-nav"></div>
+                <div class="mini-profil-nav"><div class="mini-avatar-nav">AK</div><span class="mini-nom-nav">Admin UVCI</span></div>
+            </div>
+        </header>
+
+        <main id="zone-contenu">
+            <div class="en-tete-page">
+                <div class="groupe-titre">
+                    <h1 class="titre-page">Paramètres système</h1>
+                    <p class="sous-titre-page">Configuration réservée à l'administrateur</p>
+                </div>
+            </div>
+
+            <div class="alerte-admin">
+                <i class="bi bi-shield-lock" style="flex-shrink:0;font-size:18px;margin-top:1px"></i>
+                <span>Cette page est réservée à l'administrateur. Toute modification des coefficients de calcul ou des années académiques impacte directement les volumes horaires de tous les enseignants.</span>
+            </div>
+
+            <div class="carte">
+                <!-- Onglets -->
+                <div class="onglets">
+                    <div class="onglet actif" onclick="changerOnglet('annees',this)"><i class="bi bi-calendar3"></i><span class="label-onglet">Années académiques</span></div>
+                    <div class="onglet" onclick="changerOnglet('coefficients',this)"><i class="bi bi-calculator"></i><span class="label-onglet">Coefficients de calcul</span></div>
+                    <div class="onglet" onclick="changerOnglet('departements',this)"><i class="bi bi-diagram-3"></i><span class="label-onglet">Départements</span></div>
+                    <div class="onglet" onclick="changerOnglet('taux',this)"><i class="bi bi-cash-coin"></i><span class="label-onglet">Taux horaires</span></div>
+                    <div class="onglet" onclick="changerOnglet('comptes',this)"><i class="bi bi-people-fill"></i><span class="label-onglet">Comptes utilisateurs</span></div>
+                </div>
+
+                <!-- Années académiques -->
+                <div class="contenu-onglet actif" id="tab-annees">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+                        <div style="font-size:14px;font-weight:700;color:var(--couleur-texte-principal)">Années académiques</div>
+                        <button class="btn btn-principal btn-petit" onclick="afficherToast('Nouvelle année créée.','succes')"><i class="bi bi-plus-lg"></i>Nouvelle année</button>
+                    </div>
+                    <div class="annee-active">
+                        <span class="label-active"><i class="bi bi-circle-fill" style="font-size:7px"></i> Active</span>
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+                            <div>
+                                <div style="font-size:16px;font-weight:700;color:var(--couleur-texte-principal)">2025 – 2026</div>
+                                <div style="font-size:12.5px;color:var(--couleur-texte-secondaire);margin-top:2px">1er octobre 2025 → 30 septembre 2026</div>
+                            </div>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                                <span class="badge badge-info">342 cours</span>
+                                <span class="badge badge-succes">224 activités validées</span>
+                                <span class="badge badge-avertissement">17 en attente</span>
+                            </div>
+                            <button class="btn btn-danger btn-petit" onclick="confirmerSuppression('Clôturer l\'année 2025-2026 ? Cette action est irréversible.',function(){afficherToast('Année clôturée et archivée.','info')})">
+                                <i class="bi bi-lock"></i>Clôturer
+                            </button>
+                        </div>
+                    </div>
+                    <div class="annee-inactive">
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;opacity:0.6">
+                            <div>
+                                <div style="font-size:15px;font-weight:700;color:var(--couleur-texte-principal)">2024 – 2025</div>
+                                <div style="font-size:12.5px;color:var(--couleur-texte-secondaire)">1er octobre 2024 → 30 septembre 2025 · <strong>Clôturée</strong></div>
+                            </div>
+                            <div style="display:flex;gap:8px">
+                                <span class="badge badge-neutre">Archivée</span>
+                                <button class="btn btn-contour btn-petit" onclick="afficherToast('Consultation de l\'archive 2024-2025.','info')"><i class="bi bi-eye"></i>Consulter</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coefficients de calcul -->
+                <div class="contenu-onglet" id="tab-coefficients">
+                    <div style="background:#E6F7FE;border:1px solid #4CC9F0;border-radius:10px;padding:11px 14px;margin-bottom:18px;font-size:13px;color:#1B6FA8;display:flex;gap:8px">
+                        <i class="bi bi-info-circle" style="flex-shrink:0"></i>
+                        <span>Ces coefficients définissent le calcul des volumes horaires. Formule : <strong>Volume = Nombre de séquences × Coefficient</strong>. Toute modification affecte les calculs futurs uniquement.</span>
+                    </div>
+                    <table class="table-coefs">
+                        <thead>
+                            <tr>
+                                <th>Type d'action</th>
+                                <th>Niveau de contenu</th>
+                                <th>Description</th>
+                                <th>Coefficient actuel</th>
+                                <th style="text-align:right">Modifier</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge badge-info">Création</span></td>
+                                <td><strong>Niveau 1</strong></td>
+                                <td class="texte-secondaire-tableau">Contenus simples + quiz + évaluations</td>
+                                <td><input type="number" class="champ-coef" value="0.40" step="0.05" min="0"></td>
+                                <td style="text-align:right"><button class="btn-icone" onclick="sauvegarderCoef(this)"><i class="bi bi-check-lg"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-info">Création</span></td>
+                                <td><strong>Niveau 2</strong></td>
+                                <td class="texte-secondaire-tableau">Niveau 1 + 25% activités interactives</td>
+                                <td><input type="number" class="champ-coef" value="0.75" step="0.05" min="0"></td>
+                                <td style="text-align:right"><button class="btn-icone" onclick="sauvegarderCoef(this)"><i class="bi bi-check-lg"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-info">Création</span></td>
+                                <td><strong>Niveau 3</strong></td>
+                                <td class="texte-secondaire-tableau">Serious games, simulations haute qualité</td>
+                                <td><input type="number" class="champ-coef" value="1.50" step="0.05" min="0"></td>
+                                <td style="text-align:right"><button class="btn-icone" onclick="sauvegarderCoef(this)"><i class="bi bi-check-lg"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-violet">Mise à jour</span></td>
+                                <td><strong>Niveau 1</strong></td>
+                                <td class="texte-secondaire-tableau">Mise à jour de contenus simples</td>
+                                <td><input type="number" class="champ-coef" value="0.20" step="0.05" min="0"></td>
+                                <td style="text-align:right"><button class="btn-icone" onclick="sauvegarderCoef(this)"><i class="bi bi-check-lg"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-violet">Mise à jour</span></td>
+                                <td><strong>Niveau 2</strong></td>
+                                <td class="texte-secondaire-tableau">Mise à jour avec contenus interactifs</td>
+                                <td><input type="number" class="champ-coef" value="0.375" step="0.005" min="0"></td>
+                                <td style="text-align:right"><button class="btn-icone" onclick="sauvegarderCoef(this)"><i class="bi bi-check-lg"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge badge-violet">Mise à jour</span></td>
+                                <td><strong>Niveau 3</strong></td>
+                                <td class="texte-secondaire-tableau">Mise à jour de simulations</td>
+                                <td><input type="number" class="champ-coef" value="0.75" step="0.05" min="0"></td>
+                                <td style="text-align:right"><button class="btn-icone" onclick="sauvegarderCoef(this)"><i class="bi bi-check-lg"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0 0">
+                        <div style="font-size:12.5px;color:var(--couleur-texte-secondaire)">Séquences par crédit : <strong>40 séquences = 1 crédit</strong></div>
+                        <button class="btn btn-principal" onclick="afficherToast('Tous les coefficients ont été sauvegardés.','succes')"><i class="bi bi-floppy"></i>Sauvegarder tout</button>
+                    </div>
+                </div>
+
+                <!-- Départements -->
+                <div class="contenu-onglet" id="tab-departements">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                        <div style="font-size:14px;font-weight:700;color:var(--couleur-texte-principal)">Départements</div>
+                        <button class="btn btn-principal btn-petit" onclick="afficherToast('Département ajouté.','succes')"><i class="bi bi-plus-lg"></i>Ajouter</button>
+                    </div>
+                    <div class="conteneur-tableau">
+                        <table class="tableau-donnees">
+                            <thead><tr><th>Nom du département</th><th>Code</th><th>Nb. enseignants</th><th style="text-align:right">Actions</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Informatique et Technologies</strong></td><td class="texte-secondaire-tableau">INFO</td><td>48</td><td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="afficherToast('Modification en cours…','info')"><i class="bi bi-pencil"></i></button><button class="btn-icone danger" onclick="confirmerSuppression('Supprimer le département Informatique ?',function(){afficherToast('Supprimé.','succes')})"><i class="bi bi-trash3"></i></button></div></td></tr>
+                                <tr><td><strong>Mathématiques et Sciences</strong></td><td class="texte-secondaire-tableau">MATH</td><td>24</td><td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="afficherToast('Modification en cours…','info')"><i class="bi bi-pencil"></i></button><button class="btn-icone danger" onclick="confirmerSuppression('Supprimer ?',function(){afficherToast('Supprimé.','succes')})"><i class="bi bi-trash3"></i></button></div></td></tr>
+                                <tr><td><strong>Sciences de Gestion</strong></td><td class="texte-secondaire-tableau">GEST</td><td>20</td><td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="afficherToast('Modification…','info')"><i class="bi bi-pencil"></i></button><button class="btn-icone danger" onclick="confirmerSuppression('Supprimer ?',function(){afficherToast('Supprimé.','succes')})"><i class="bi bi-trash3"></i></button></div></td></tr>
+                                <tr><td><strong>Droit et Sciences Politiques</strong></td><td class="texte-secondaire-tableau">DROIT</td><td>16</td><td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="afficherToast('Modification…','info')"><i class="bi bi-pencil"></i></button><button class="btn-icone danger" onclick="confirmerSuppression('Supprimer ?',function(){afficherToast('Supprimé.','succes')})"><i class="bi bi-trash3"></i></button></div></td></tr>
+                                <tr><td><strong>Langues et Communication</strong></td><td class="texte-secondaire-tableau">LANG</td><td>16</td><td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="afficherToast('Modification…','info')"><i class="bi bi-pencil"></i></button><button class="btn-icone danger" onclick="confirmerSuppression('Supprimer ?',function(){afficherToast('Supprimé.','succes')})"><i class="bi bi-trash3"></i></button></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Taux horaires -->
+                <div class="contenu-onglet" id="tab-taux">
+                    <div style="font-size:14px;font-weight:700;color:var(--couleur-texte-principal);margin-bottom:16px">Taux horaires par grade</div>
+                    <div class="conteneur-tableau" style="margin-bottom:20px">
+                        <table class="tableau-donnees">
+                            <thead><tr><th>Grade</th><th>Statut</th><th>Taux horaire (FCFA/h)</th><th style="text-align:right">Actions</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>Professeur</strong></td><td><span class="badge badge-succes">Permanent</span></td><td><input type="number" class="champ-coef" value="10000" style="width:120px"></td><td style="text-align:right"><button class="btn-icone" onclick="sauvegarderCoef(this)"><i class="bi bi-check-lg"></i></button></td></tr>
+                                <tr><td><strong>Maître de Conférences</strong></td><td><span class="badge badge-succes">Permanent</span></td><td><input type="number" class="champ-coef" value="8500" style="width:120px"></td><td style="text-align:right"><button class="btn-icone" onclick="sauvegarderCoef(this)"><i class="bi bi-check-lg"></i></button></td></tr>
+                                <tr><td><strong>Maître-Assistant</strong></td><td><span class="badge badge-succes">Permanent</span></td><td><input type="number" class="champ-coef" value="6500" style="width:120px"></td><td style="text-align:right"><button class="btn-icone" onclick="sauvegarderCoef(this)"><i class="bi bi-check-lg"></i></button></td></tr>
+                                <tr><td><strong>Assistant</strong></td><td><span class="badge badge-succes">Permanent</span></td><td><input type="number" class="champ-coef" value="5000" style="width:120px"></td><td style="text-align:right"><button class="btn-icone" onclick="sauvegarderCoef(this)"><i class="bi bi-check-lg"></i></button></td></tr>
+                                <tr><td><strong>Vacataire (tous grades)</strong></td><td><span class="badge badge-avertissement">Vacataire</span></td><td><input type="number" class="champ-coef" value="4000" style="width:120px"></td><td style="text-align:right"><button class="btn-icone" onclick="sauvegarderCoef(this)"><i class="bi bi-check-lg"></i></button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="text-align:right">
+                        <button class="btn btn-principal" onclick="afficherToast('Taux horaires sauvegardés.','succes')"><i class="bi bi-floppy"></i>Sauvegarder</button>
+                    </div>
+                </div>
+
+                <!-- Comptes utilisateurs -->
+                <div class="contenu-onglet" id="tab-comptes">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                        <div style="font-size:14px;font-weight:700;color:var(--couleur-texte-principal)">Comptes utilisateurs</div>
+                        <button class="btn btn-principal btn-petit" onclick="afficherToast('Création de compte en cours…','info')"><i class="bi bi-person-plus"></i>Créer un compte</button>
+                    </div>
+                    <div class="conteneur-tableau">
+                        <table class="tableau-donnees">
+                            <thead><tr><th>Utilisateur</th><th>Rôle</th><th class="colonne-masquable">Dernier accès</th><th>Statut</th><th style="text-align:right">Actions</th></tr></thead>
+                            <tbody>
+                                <tr><td><div class="cellule-personne"><div class="avatar-tableau bleu">AK</div><div><div class="nom-cellule">Admin UVCI</div><div class="detail-cellule">admin@uvci.edu.ci</div></div></div></td><td><span class="badge badge-danger">Administrateur</span></td><td class="texte-secondaire-tableau colonne-masquable">Aujourd'hui</td><td><span class="badge badge-succes"><i class="bi bi-circle-fill" style="font-size:7px"></i> Actif</span></td><td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="afficherToast('Modification du compte admin…','info')"><i class="bi bi-pencil"></i></button></div></td></tr>
+                                <tr><td><div class="cellule-personne"><div class="avatar-tableau violet">SP</div><div><div class="nom-cellule">Secrétaire UVCI</div><div class="detail-cellule">secretaire@uvci.edu.ci</div></div></div></td><td><span class="badge badge-violet">Secrétaire</span></td><td class="texte-secondaire-tableau colonne-masquable">Aujourd'hui</td><td><span class="badge badge-succes"><i class="bi bi-circle-fill" style="font-size:7px"></i> Actif</span></td><td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="afficherToast('Modification…','info')"><i class="bi bi-pencil"></i></button><button class="btn-icone danger" onclick="confirmerSuppression('Désactiver ce compte ?',function(){afficherToast('Compte désactivé.','avertissement')})"><i class="bi bi-person-x"></i></button></div></td></tr>
+                                <tr><td><div class="cellule-personne"><div class="avatar-tableau vert">KY</div><div><div class="nom-cellule">Konan Yao Jean-Paul</div><div class="detail-cellule">konan.yao@uvci.edu.ci</div></div></div></td><td><span class="badge badge-info">Enseignant</span></td><td class="texte-secondaire-tableau colonne-masquable">Il y a 2j</td><td><span class="badge badge-succes"><i class="bi bi-circle-fill" style="font-size:7px"></i> Actif</span></td><td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="afficherToast('Modification…','info')"><i class="bi bi-pencil"></i></button><button class="btn-icone danger" onclick="confirmerSuppression('Désactiver ce compte ?',function(){afficherToast('Compte désactivé.','avertissement')})"><i class="bi bi-person-x"></i></button></div></td></tr>
+                                <tr><td><div class="cellule-personne"><div class="avatar-tableau orange">DT</div><div><div class="nom-cellule">Djeninba Traoré</div><div class="detail-cellule">djeninba.traore@uvci.edu.ci</div></div></div></td><td><span class="badge badge-info">Enseignant</span></td><td class="texte-secondaire-tableau colonne-masquable">Il y a 5j</td><td><span class="badge badge-succes"><i class="bi bi-circle-fill" style="font-size:7px"></i> Actif</span></td><td><div class="actions-tableau" style="justify-content:flex-end"><button class="btn-icone" onclick="afficherToast('Modification…','info')"><i class="bi bi-pencil"></i></button><button class="btn-icone danger" onclick="confirmerSuppression('Désactiver ?',function(){afficherToast('Désactivé.','avertissement')})"><i class="bi bi-person-x"></i></button></div></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+        <footer id="pied-page">© 2026 Université Virtuelle de Côte d'Ivoire — Application de gestion des heures des enseignants</footer>
+    </div>
+</div>
+
+<script src="assets/js/principal.js"></script>
+<script>
+function changerOnglet(id, el) {
+    document.querySelectorAll('.onglet').forEach(function(o){o.classList.remove('actif')});
+    document.querySelectorAll('.contenu-onglet').forEach(function(c){c.classList.remove('actif')});
+    el.classList.add('actif');
+    document.getElementById('tab-'+id).classList.add('actif');
+}
+function sauvegarderCoef(btn) {
+    var input = btn.closest('tr').querySelector('.champ-coef');
+    afficherToast('Coefficient mis à jour : ' + input.value, 'succes');
+}
+</script>
+</body>
+</html>
